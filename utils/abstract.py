@@ -16,7 +16,8 @@ class StableDiffusion:
         self.model_name  = None
         self.model_path = None
         self.save_path = None
-    
+        self.model = None
+
     def get_save_path(self, output_path):
         folder_path = os.path.join(output_path, self.model_name+ "_output")
         is_folder(folder_path)
@@ -52,15 +53,14 @@ class StableDiffusionXLTurbo(StableDiffusion):
         self.model_path = "stabilityai/sdxl-turbo"
         self.torch_dtype = torch.float16
         self.variant = "fp16"
-        self.model = self.init_model()
         # self.save_path = self.get_save_path()
 
     def init_model(self):
-        pipe = AutoPipelineForText2Image.from_pretrained(self.model_path, torch_dtype=self.torch_dtype, variant=self.variant)
-        pipe.to("cuda")
-        return pipe
+        self.model = AutoPipelineForText2Image.from_pretrained(self.model_path, torch_dtype=self.torch_dtype, variant=self.variant)
+        self.model.to("cuda")
 
     def inference(self):
+        index = 1
         for prompt in self.prompt_set:
             image = self.model(prompt=prompt, num_inference_steps=3, guidance_scale=0.3).images[0]
             save_image(image, self.save_path, index)
@@ -76,15 +76,14 @@ class StableDiffusionXL(StableDiffusion):
         self.model_path = "stabilityai/stable-diffusion-xl-base-1.0"
         self.torch_dtype = torch.float16
         self.variant = "fp16"
-        self.model = self.init_model()
         # self.save_path = self.get_save_path()
 
     def init_model(self):
-        pipe = AutoPipelineForText2Image.from_pretrained(self.model_path, torch_dtype=self.torch_dtype, variant=self.variant)
-        pipe.to("cuda")
-        return pipe
+        self.model = AutoPipelineForText2Image.from_pretrained(self.model_path, torch_dtype=self.torch_dtype, variant=self.variant)
+        self.model.to("cuda")
 
     def inference(self):
+        index = 1
         for prompt in self.prompt_set:
             image = self.model(prompt=prompt, num_inference_steps=3, guidance_scale=0.3).images[0]
             save_image(image, self.save_path, index)
@@ -100,17 +99,17 @@ class StableDiffusion3Medium(StableDiffusion):
         self.model_path = "stabilityai/stable-diffusion-3-medium-diffusers"
         self.torch_dtype = torch.float16
         self.variant = "fp16"
-        self.model = self.init_model()
         # self.save_path = self.get_save_path()
 
     def init_model(self):
-        pipe = StableDiffusion3Pipeline.from_pretrained(self.model_path, torch_dtype=self.torch_dtype)
-        pipe.to("cuda")
+        self.model = StableDiffusion3Pipeline.from_pretrained(self.model_path, torch_dtype=self.torch_dtype)
+        self.model.to("cuda")
         return pipe
 
     def inference(self):
+        index = 1
         for prompt in self.prompt_set:
-            image = pipe(prompt=prompt,
+            image = self.model(prompt=prompt,
                          negative_prompt="",
                          num_inference_steps=28,
                          guidance_scale=7.0,
@@ -129,7 +128,6 @@ class StableDiffusionCascade(StableDiffusion):
         self.model_decoder_path = "stabilityai/stable-cascade"
         self.torch_dtype = torch.float16
         self.variant = "bf16"
-        self.model = self.init_model()
         # self.save_path = self.get_save_path()
         self.negative_prompt = ""
 
@@ -141,6 +139,7 @@ class StableDiffusionCascade(StableDiffusion):
         # decoder.enable_model_cpu_offload()
 
     def inference(self):
+        index = 1
         for prompt in self.prompt_set:
             prior_output = self.prior(
                                  prompt=prompt,
@@ -174,17 +173,17 @@ class Kandinsky3(StableDiffusion):
         self.model_path = "kandinsky-community/kandinsky-3"
         self.torch_dtype = torch.float16
         self.variant = "fp16"
-        self.model = self.init_model()
         # self.save_path = self.get_save_path()
         self.negative_prompt = ""
 
     def init_model(self):
-        self.pipeline = Kandinsky3Pipeline.from_pretrained(self.model_path, variant=self.variant, torch_dtype=self.torch_dtype)
-        self.pipeline.enable_model_cpu_offload()
+        self.model = Kandinsky3Pipeline.from_pretrained(self.model_path, variant=self.variant, torch_dtype=self.torch_dtype)
+        self.model.enable_model_cpu_offload()
 
     def inference(self):
+        index = 1
         for prompt in self.prompt_set:
-            image = self.pipeline(prompt).images[0]
+            image = self.model(prompt).images[0]
             save_image(image, self.save_path, index)
             index += 1
         return 
@@ -199,7 +198,6 @@ class StableDiffusionXLwithRefiner(StableDiffusion):
         self.model_refiner_path = "stabilityai/stable-diffusion-xl-refiner-1.0"
         self.torch_dtype = torch.float16
         self.variant = "fp16"
-        self.model = self.init_model()
         # self.save_path = self.get_save_path()
         self.negative_prompt = ""
 
@@ -219,6 +217,7 @@ class StableDiffusionXLwithRefiner(StableDiffusion):
                             ).to("cuda")
 
     def inference(self):
+        index = 1
         for prompt in self.prompt_set:
             image = self.base(
                         prompt=prompt,
@@ -245,20 +244,20 @@ class Playground(StableDiffusion):
         self.model_path = "playgroundai/playground-v2.5-1024px-aesthetic"
         self.torch_dtype = torch.float16
         self.variant = "fp16"
-        self.model = self.init_model()
         # self.save_path = self.get_save_path()
         self.negative_prompt = ""
 
     def init_model(self):
-        self.pipe = DiffusionPipeline.from_pretrained(
+        self.model = DiffusionPipeline.from_pretrained(
                                         self.model_path,
                                         torch_dtype=self.torch_dtype,
                                         variant=self.variant,
                                         ).to("cuda")
 
     def inference(self):
+        index = 1
         for prompt in self.prompt_set:
-            image = self.pipe(prompt=prompt, num_inference_steps=50, guidance_scale=3).images[0]
+            image = self.model(prompt=prompt, num_inference_steps=50, guidance_scale=3).images[0]
             save_image(image, self.save_path, index)
             index += 1
         return 
@@ -266,7 +265,7 @@ class Playground(StableDiffusion):
 # model factory
 class ModelFactory:
     @staticmethod
-    def get_model(model_name, output_path):
+    def get_model(model_name):
         if model_name == "sdxl_turbo":
             return StableDiffusionXLTurbo(model_name=model_name)
         elif model_name == "sdxl":

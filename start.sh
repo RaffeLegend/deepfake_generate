@@ -15,5 +15,5 @@
 # mkdir -p $OUTPUT_DIR
 
 # execute shell
-python run_sd.py --model sdxl-turbo --prompt prompt.txt
+python run_sd.py --model sdxl_turbo sdxl sd_cascade --prompt prompt.txt
 
