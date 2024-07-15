@@ -1,5 +1,6 @@
-from utils.utils import save_image, is_folder
+import os
 import torch
+from utils.utils import save_image, is_folder
 from diffusers import AutoPipelineForText2Image, StableDiffusion3Pipeline, \
                       StableCascadeDecoderPipeline, StableCascadePriorPipeline, \
                       Kandinsky3Pipeline, DiffusionPipeline
@@ -14,11 +15,13 @@ class StableDiffusion:
         self.width  = None
         self.model_name  = None
         self.model_path = None
+        self.save_path = None
     
-    def get_save_path(self):
-        folder_name = "./" + self.model_name+ "_output"
-        is_folder(folder_name)
-        return folder_name
+    def get_save_path(self, output_path):
+        folder_path = os.path.join(output_path, self.model_name+ "_output")
+        is_folder(folder_path)
+        self.save_path = folder_path
+        return folder_path
     
     def load_data(self, prompt_path):
         prompt_set = dict()
@@ -50,7 +53,7 @@ class StableDiffusionXLTurbo(StableDiffusion):
         self.torch_dtype = torch.float16
         self.variant = "fp16"
         self.model = self.init_model()
-        self.save_path = self.get_save_path()
+        # self.save_path = self.get_save_path()
 
     def init_model(self):
         pipe = AutoPipelineForText2Image.from_pretrained(self.model_path, torch_dtype=self.torch_dtype, variant=self.variant)
@@ -74,7 +77,7 @@ class StableDiffusionXL(StableDiffusion):
         self.torch_dtype = torch.float16
         self.variant = "fp16"
         self.model = self.init_model()
-        self.save_path = self.get_save_path()
+        # self.save_path = self.get_save_path()
 
     def init_model(self):
         pipe = AutoPipelineForText2Image.from_pretrained(self.model_path, torch_dtype=self.torch_dtype, variant=self.variant)
@@ -98,7 +101,7 @@ class StableDiffusion3Medium(StableDiffusion):
         self.torch_dtype = torch.float16
         self.variant = "fp16"
         self.model = self.init_model()
-        self.save_path = self.get_save_path()
+        # self.save_path = self.get_save_path()
 
     def init_model(self):
         pipe = StableDiffusion3Pipeline.from_pretrained(self.model_path, torch_dtype=self.torch_dtype)
@@ -127,7 +130,7 @@ class StableDiffusionCascade(StableDiffusion):
         self.torch_dtype = torch.float16
         self.variant = "bf16"
         self.model = self.init_model()
-        self.save_path = self.get_save_path()
+        # self.save_path = self.get_save_path()
         self.negative_prompt = ""
 
     def init_model(self):
@@ -172,7 +175,7 @@ class Kandinsky3(StableDiffusion):
         self.torch_dtype = torch.float16
         self.variant = "fp16"
         self.model = self.init_model()
-        self.save_path = self.get_save_path()
+        # self.save_path = self.get_save_path()
         self.negative_prompt = ""
 
     def init_model(self):
@@ -197,7 +200,7 @@ class StableDiffusionXLwithRefiner(StableDiffusion):
         self.torch_dtype = torch.float16
         self.variant = "fp16"
         self.model = self.init_model()
-        self.save_path = self.get_save_path()
+        # self.save_path = self.get_save_path()
         self.negative_prompt = ""
 
     def init_model(self):
@@ -243,7 +246,7 @@ class Playground(StableDiffusion):
         self.torch_dtype = torch.float16
         self.variant = "fp16"
         self.model = self.init_model()
-        self.save_path = self.get_save_path()
+        # self.save_path = self.get_save_path()
         self.negative_prompt = ""
 
     def init_model(self):
@@ -263,7 +266,7 @@ class Playground(StableDiffusion):
 # model factory
 class ModelFactory:
     @staticmethod
-    def get_model(model_name):
+    def get_model(model_name, output_path):
         if model_name == "sdxl_turbo":
             return StableDiffusionXLTurbo(model_name=model_name)
         elif model_name == "sdxl":
