@@ -24,7 +24,7 @@ class StableDiffusion:
         return folder_path
     
     def load_data(self, prompt_path):
-        prompt_set = dict()
+        prompt_set = list()
         prompt = ""
         with open(prompt_path, 'r') as f:
             for line in f:
