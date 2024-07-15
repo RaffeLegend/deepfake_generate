@@ -104,7 +104,6 @@ class StableDiffusion3Medium(StableDiffusion):
     def init_model(self):
         self.model = StableDiffusion3Pipeline.from_pretrained(self.model_path, torch_dtype=self.torch_dtype)
         self.model.to("cuda")
-        return pipe
 
     def inference(self):
         index = 1
