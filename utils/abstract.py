@@ -233,6 +233,33 @@ class StableDiffusionXLwithRefiner(StableDiffusion):
             index += 1
         return 
 
+# define model playground
+class Playground(StableDiffusion):
+    def __init__(self, model_name):
+        super().__init__()
+        self.prompt_set = None
+        self.model_name = model_name
+        self.model_path = "playgroundai/playground-v2.5-1024px-aesthetic"
+        self.torch_dtype = torch.float16
+        self.variant = "fp16"
+        self.model = self.init_model()
+        self.save_path = self.get_save_path()
+        self.negative_prompt = ""
+
+    def init_model(self):
+        self.pipe = DiffusionPipeline.from_pretrained(
+                                        self.model_path,
+                                        torch_dtype=self.torch_dtype,
+                                        variant=self.variant,
+                                        ).to("cuda")
+
+    def inference(self):
+        for prompt in self.prompt_set:
+            image = self.pipe(prompt=prompt, num_inference_steps=50, guidance_scale=3).images[0]
+            save_image(image, self.save_path, index)
+            index += 1
+        return 
+
 # model factory
 class ModelFactory:
     @staticmethod
@@ -249,5 +276,7 @@ class ModelFactory:
             return Kandinsky3(model_name=model_name)
         elif model_name == "sdxl_refiner":
             return StableDiffusionXLwithRefiner(model_name=model_name)
+        elif model_name == "playground":
+            return Playground(model_name=model_name)
         else:
             raise ValueError(f"Unknown model name: {model_name}")
