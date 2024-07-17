@@ -85,7 +85,7 @@ class StableDiffusionXL(StableDiffusion):
     def inference(self):
         index = 1
         for prompt in self.prompt_set:
-            image = self.model(prompt=prompt, num_inference_steps=3, guidance_scale=0.3).images[0]
+            image = self.model(prompt=prompt, num_inference_steps=40, guidance_scale=0.3).images[0]
             save_image(image, self.save_path, index)
             index += 1
         return 
