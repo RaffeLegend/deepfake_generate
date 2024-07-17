@@ -217,6 +217,7 @@ class StableDiffusionXLwithRefiner(StableDiffusion):
 
     def inference(self):
         index = 1
+        index_ori = 10000
         for prompt in self.prompt_set:
             image = self.base(
                         prompt=prompt,
@@ -224,6 +225,8 @@ class StableDiffusionXLwithRefiner(StableDiffusion):
                         denoising_end=0.8,
                         output_type="latent",
                         ).images
+            save_image(image, self.save_path, index_ori)
+            index_ori += 1
             image = self.refiner(
                         prompt=prompt,
                         num_inference_steps=40,
