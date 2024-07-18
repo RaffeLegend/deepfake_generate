@@ -225,7 +225,7 @@ class StableDiffusionXLwithRefiner(StableDiffusion):
                         denoising_end=0.8,
                         output_type="latent",
                         ).images
-            save_image(image, self.save_path, index_ori)
+            save_image(image[0], self.save_path, index_ori)
             index_ori += 1
             image = self.refiner(
                         prompt=prompt,
