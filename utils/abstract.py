@@ -4,6 +4,7 @@ from utils.utils import save_image, is_folder
 from diffusers import AutoPipelineForText2Image, StableDiffusion3Pipeline, \
                       StableCascadeDecoderPipeline, StableCascadePriorPipeline, \
                       Kandinsky3Pipeline, DiffusionPipeline
+from globals.prompt import NEGATIVE_PROMPT
                       
 
 
@@ -109,7 +110,7 @@ class StableDiffusion3Medium(StableDiffusion):
         index = 1
         for prompt in self.prompt_set:
             image = self.model(prompt=prompt,
-                         negative_prompt="",
+                         negative_prompt=NEGATIVE_PROMPT,
                          num_inference_steps=28,
                          guidance_scale=7.0,
                          ).images[0]
