@@ -100,10 +100,15 @@ class StableDiffusion3Medium(StableDiffusion):
         self.model_path = "stabilityai/stable-diffusion-3-medium-diffusers"
         self.torch_dtype = torch.float16
         self.variant = "fp16"
+        self.custom_pipeline="lpw_stable_diffusion"
         # self.save_path = self.get_save_path()
 
     def init_model(self):
-        self.model = StableDiffusion3Pipeline.from_pretrained(self.model_path, torch_dtype=self.torch_dtype)
+        self.model = StableDiffusion3Pipeline.from_pretrained(
+                                    self.model_path, 
+                                    torch_dtype=self.torch_dtype,
+                                    custom_pipeline=self.custom_pipeline,
+                                    )
         self.model.to("cuda")
 
     def inference(self):
