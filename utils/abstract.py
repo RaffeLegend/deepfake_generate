@@ -38,6 +38,21 @@ class StableDiffusion:
         print(f"Collect {len(prompt_set)} prompts to generate images")
         self.prompt_set = prompt_set
 
+    # embedding the prompt
+    def prompt_embedding(self, prompt):
+        max_length = self.model.tokenizer.model_max_length
+
+        input_ids = self.model.tokenizer(prompt, return_tensors="pt").input_ids
+        input_ids = input_ids.to("cuda")
+
+        concat_embeds = []
+        for i in range(0, input_ids.shape[-1], max_length):
+            concat_embeds.append(self.model.text_encoder(input_ids[:, i: i + max_length])[0])
+
+        prompt_embeds = torch.cat(concat_embeds, dim=1)
+
+        return prompt_embeds
+
     def conduct(self, data):
         raise NotImplementedError("Subclasses should implement this!")
     
@@ -110,14 +125,17 @@ class StableDiffusion3Medium(StableDiffusion):
                                     custom_pipeline=self.custom_pipeline,
                                     )
         self.model.to("cuda")
+        self.negative_prompt=self.prompt_embedding(NEGATIVE_PROMPT)
 
     def inference(self):
         index = 1
         for prompt in self.prompt_set:
+            prompt_embed = self.prompt_embedding(prompt)
             image = self.model(prompt=prompt,
-                         negative_prompt=NEGATIVE_PROMPT,
+                         negative_prompt=self.negative_prompt,
                          num_inference_steps=28,
                          guidance_scale=7.0,
+                         max_embeddings_multiples=4,
                          ).images[0]
             save_image(image, self.save_path, index)
             index += 1
