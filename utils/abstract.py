@@ -4,6 +4,7 @@ from utils.utils import save_image, is_folder
 from diffusers import AutoPipelineForText2Image, StableDiffusion3Pipeline, \
                       StableCascadeDecoderPipeline, StableCascadePriorPipeline, \
                       Kandinsky3Pipeline, DiffusionPipeline
+from sd_embed.embedding_funcs import get_weighted_text_embeddings_sd3
 from globals.prompt import NEGATIVE_PROMPT
                       
 
@@ -39,19 +40,10 @@ class StableDiffusion:
         self.prompt_set = prompt_set
 
     # embedding the prompt
-    def prompt_embedding(self, prompt):
-        max_length = self.model.tokenizer.model_max_length
+    def prompt_embedding(self, prompt, negative_prompt):
+        prompt_set = get_weighted_text_embeddings_sd3(self.model, prompt = prompt, neg_prompt = negative_prompt)
 
-        input_ids = self.model.tokenizer(prompt, return_tensors="pt").input_ids
-        input_ids = input_ids.to("cuda")
-
-        concat_embeds = []
-        for i in range(0, input_ids.shape[-1], max_length):
-            concat_embeds.append(self.model.text_encoder(input_ids[:, i: i + max_length])[0])
-
-        prompt_embeds = torch.cat(concat_embeds, dim=1)
-
-        return prompt_embeds
+        return prompt_set
 
     def conduct(self, data):
         raise NotImplementedError("Subclasses should implement this!")
@@ -115,7 +107,7 @@ class StableDiffusion3Medium(StableDiffusion):
         self.model_path = "stabilityai/stable-diffusion-3-medium-diffusers"
         self.torch_dtype = torch.float16
         self.variant = "fp16"
-        self.custom_pipeline="lpw_stable_diffusion"
+        # self.custom_pipeline="lpw_stable_diffusion"
         # self.save_path = self.get_save_path()
 
     def init_model(self):
@@ -125,14 +117,17 @@ class StableDiffusion3Medium(StableDiffusion):
                                     custom_pipeline=self.custom_pipeline,
                                     )
         self.model.to("cuda")
-        self.negative_prompt=self.prompt_embedding(NEGATIVE_PROMPT)
 
     def inference(self):
         index = 1
         for prompt in self.prompt_set:
-            prompt_embed = self.prompt_embedding(prompt)
-            image = self.model(prompt=prompt,
-                         negative_prompt=self.negative_prompt,
+            prompt_set = self.prompt_embedding(prompt, NEGATIVE_PROMPT)
+            prompt_embeds, prompt_neg_embeds, pooled_prompt_embeds, negative_pooled_prompt_embeds = prompt_set
+            image = self.model(
+                         prompt_embeds=prompt_embeds,
+                         pooled_prompt_embeds=pooled_prompt_embeds,
+                         prompt_neg_embeds=prompt_neg_embeds,
+                         negative_pooled_prompt_embeds=negative_pooled_prompt_embeds,
                          num_inference_steps=28,
                          guidance_scale=7.0,
                          max_embeddings_multiples=4,
