@@ -129,7 +129,6 @@ class StableDiffusion3Medium(StableDiffusion):
                          negative_pooled_prompt_embeds=negative_pooled_prompt_embeds,
                          num_inference_steps=28,
                          guidance_scale=7.0,
-                         max_embeddings_multiples=4,
                          ).images[0]
             save_image(image, self.save_path, index)
             index += 1
