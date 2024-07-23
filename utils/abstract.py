@@ -125,7 +125,7 @@ class StableDiffusion3Medium(StableDiffusion):
             image = self.model(
                          prompt_embeds=prompt_embeds,
                          pooled_prompt_embeds=pooled_prompt_embeds,
-                         prompt_neg_embeds=prompt_neg_embeds,
+                         negative_prompt_embeds=prompt_neg_embeds,
                          negative_pooled_prompt_embeds=negative_pooled_prompt_embeds,
                          num_inference_steps=28,
                          guidance_scale=7.0,
