@@ -114,7 +114,6 @@ class StableDiffusion3Medium(StableDiffusion):
         self.model = StableDiffusion3Pipeline.from_pretrained(
                                     self.model_path, 
                                     torch_dtype=self.torch_dtype,
-                                    custom_pipeline=self.custom_pipeline,
                                     )
         self.model.to("cuda")
 
