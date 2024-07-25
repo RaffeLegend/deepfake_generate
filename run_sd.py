@@ -10,7 +10,7 @@ def parse_args():
     parser.add_argument("--models", nargs='+', type=str, required=True, 
                         help="choose model from [sdxl_turbo, sdxl, sd3_medium, sd_cascade, kandinsky3, sdxl_refiner, playground]")
     # parser.add_argument("--model", type=str, default="sdxl-turbo", help="model list")
-    parser.add_argument("--prompt",  type=str, default="prompt.txt", help="prompt path")
+    parser.add_argument("--prompt",  type=str, default="prompt.json", help="prompt path")
     parser.add_argument("--output_path",  type=str, default="./output", help="output path")
     parser.add_argument("--image_path",  type=str, default="", help="input image path")
     return parser.parse_args()
