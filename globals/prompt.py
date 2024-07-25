@@ -38,3 +38,26 @@ NEGATIVE_PROMPT8 = "Asymmetry, Parts, Components, Design, Broken, Cartoon, Disto
                     Bad proportion, Inverted, Misaligned, Macabre, Missing parts, Oversized, Tilted, "
 
 NEGATIVE_PROMPT = NEGATIVE_PROMPT + NEGATIVE_PROMPT4 + NEGATIVE_PROMPT5 + NEGATIVE_PROMPT6 + NEGATIVE_PROMPT7 + NEGATIVE_PROMPT8
+
+PROMPT_GENERATE_DESCRIPTION = ""
+
+PROMPT_BRIEF_DESCRIPTION      = "give the brief description of image"
+PROMPT_VERB_DESCRIPTION       = "give the description of what to imaging in a line"
+PROMPT_IMAGING_DESCRIPTION    = "create the prompt to describe what the image imaging, it will be used   \
+                                 for recreating the image excatly"
+PROMPT_ONE_LINE_DESCRIPTION   = "Describe the image in one sentence and this description will be used to \
+                                 regenerate the same image."
+PROMPT_MIDJOURNEY_DESCRIPTION = "Generates prompt that is inspirational and suggestive, it can be used to\
+                                 recreate an uploaded image exactly"
+PROMPT_BRIEF_MID_DESCRIPTION  = "Create a brief and inspiring imaging prompt that is inspirational and   \
+                                 suggestive , which will be used exactly as provided for generating an image from text. The prompt should be in 77 tokens."
+PROMPT_DETAILED_DESCRIPTION   = "Carefully analyze the provided image and generate an exhaustive         \
+                                 description that captures every element essential for its recreation.   \
+                                 Detail the spatial arrangement, key subjects, and any background        \
+                                 elements. Specify the color palette, noting any gradients or unique     \
+                                 shades present. Describe any actions or interactions between subjects,  \
+                                 and capture the mood or atmosphere effectively. Your description should \
+                                 be precise and comprehensive, enabling an artist or a generative model  \
+                                 to replicate the image with high fidelity based on your text alone."
+
+PROMPT_GENERATE_DESCRIPTION = PROMPT_ONE_LINE_DESCRIPTION
