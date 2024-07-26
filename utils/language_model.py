@@ -250,7 +250,7 @@ class InternVL2(StableLanguageModel):
     
     def load_image(self, image_file, max_num=6):
         image = Image.open(image_file).convert('RGB')
-        transform = self.build_transform(input_size=self.input_size)
+        transform = self.build_transform()
         images = self.dynamic_preprocess(image, use_thumbnail=True, max_num=max_num)
         pixel_values = [transform(image) for image in images]
         pixel_values = torch.stack(pixel_values)
