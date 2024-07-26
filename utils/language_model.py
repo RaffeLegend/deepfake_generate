@@ -116,7 +116,7 @@ class StableLanguageModel2_12B(StableLanguageModel):
             file_path = image_info["file_path"]
             file_name = image_info["file_name"]
             image_des_format = self.get_image_des_format(os.path.join(file_path, file_name))
-            description = self.generate_description_with_lm(image_des_format, self.prompt)
+            description = self.generate_description_with_lm(image_des_format)
             image_info["prompt"] = description
 
         with open(self.image_info_path, 'w') as f:
