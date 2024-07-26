@@ -1,6 +1,6 @@
 import os
 import argparse
-from utils.abstract import LMModelFactory
+from utils.language_model import LMModelFactory
 from utils.exception import ModelExecuteError
 from utils.utils import is_folder
 
