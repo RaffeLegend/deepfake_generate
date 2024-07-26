@@ -140,7 +140,7 @@ class InternVL2(StableLanguageModel):
         self.torch_dtype = torch.bfloat16
         self.variant = "fp16"
         self.prompt = PROMPT_GENERATE_DESCRIPTION
-        self.input_size = 448
+        self.image_size = 448
         self.generation_config = dict(
                             num_beams=1,
                             max_new_tokens=1024,
@@ -188,7 +188,7 @@ class InternVL2(StableLanguageModel):
     def build_transform(self):
         transform = T.Compose([
                             T.Lambda(lambda img: img.convert('RGB') if img.mode != 'RGB' else img),
-                            T.Resize((self.input_size, self.input_size), interpolation=InterpolationMode.BICUBIC),
+                            T.Resize((self.image_size, self.image_size), interpolation=InterpolationMode.BICUBIC),
                             T.ToTensor(),
                             T.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD)
                             ])
