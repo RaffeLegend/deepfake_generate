@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
             # running pipeline to generate
             model.get_save_path(output_path, prompt_path, image_info)
-            model.get_image_path(image_path)
+            model.get_images_path(image_path)
             model.init_model()
             model.inference()
         except ModelExecuteError as e:
