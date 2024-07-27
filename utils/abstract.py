@@ -6,7 +6,7 @@ from diffusers import AutoPipelineForText2Image, StableDiffusion3Pipeline, \
                       StableCascadeDecoderPipeline, StableCascadePriorPipeline, \
                       Kandinsky3Pipeline, DiffusionPipeline
 from sd_embed.embedding_funcs import get_weighted_text_embeddings_sd3
-from globals.prompt import NEGATIVE_PROMPT
+from globals.prompt import NEGATIVE_PROMPT, PROMPT_REALISTIC_VISION_NEGATIVE
 
 
 # define abstract class
@@ -293,13 +293,9 @@ class RealisticVision6(StableDiffusion):
         for data_info in self.data_set:
             index  = data_info["index"]
             prompt = data_info["prompt"]
-            prompt_set = self.prompt_embedding(prompt, NEGATIVE_PROMPT)
-            prompt_embeds, prompt_neg_embeds, pooled_prompt_embeds, negative_pooled_prompt_embeds = prompt_set
             image = self.model(
-                         prompt_embeds=prompt_embeds,
-                         pooled_prompt_embeds=pooled_prompt_embeds,
-                         negative_prompt_embeds=prompt_neg_embeds,
-                         negative_pooled_prompt_embeds=negative_pooled_prompt_embeds,
+                         prompt=prompt,
+                         negative_prompt=PROMPT_REALISTIC_VISION_NEGATIVE,
                          num_inference_steps=28,
                          guidance_scale=7.0,
                          ).images[0]

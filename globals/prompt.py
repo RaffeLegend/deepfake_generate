@@ -61,3 +61,14 @@ PROMPT_DETAILED_DESCRIPTION   = "Carefully analyze the provided image and genera
                                  to replicate the image with high fidelity based on your text alone."
 
 PROMPT_GENERATE_DESCRIPTION = PROMPT_ONE_LINE_DESCRIPTION
+
+PROMPT_REALISTIC_VISION_POSITIVE = ""
+
+PROMPT_REALISTIC_VISION_NEGATIVE = "deformed iris, deformed pupils, semi-realistic, cgi, 3d, render,     \
+                                    sketch, cartoon, drawing, anime), text, cropped, out of frame,       \
+                                    worst quality, low quality, jpeg artifacts, ugly, duplicate, morbid, \
+                                    mutilated, extra fingers, mutated hands, poorly drawn hands,         \
+                                    poorly drawn face, mutation, deformed, blurry, dehydrated,           \
+                                    bad anatomy, bad proportions, extra limbs, cloned face, disfigured,  \
+                                    gross proportions, malformed limbs, missing arms, missing legs,      \
+                                    extra arms, extra legs, fused fingers, too many fingers, long neck"
