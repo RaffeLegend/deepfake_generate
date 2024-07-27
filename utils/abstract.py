@@ -296,6 +296,37 @@ class RealisticVision6(StableDiffusion):
             image = self.model(
                          prompt=prompt,
                          negative_prompt=PROMPT_REALISTIC_VISION_NEGATIVE,
+                         num_inference_steps=40,
+                         guidance_scale=7.0,
+                         ).images[0]
+            save_image(image, self.save_path, index)
+        return 
+
+# define model absolute reality
+class AbsoluteReality(StableDiffusion):
+    def __init__(self, model_name):
+        super().__init__()
+        self.prompt_set = None
+        self.model_name = model_name
+        self.model_path = "Lykon/AbsoluteReality"
+        self.torch_dtype = torch.float16
+        self.variant = "fp16"
+        # self.custom_pipeline="lpw_stable_diffusion"
+        # self.save_path = self.get_save_path()
+
+    def init_model(self):
+        self.model = DiffusionPipeline.from_pretrained(
+                                    self.model_path,
+                                    )
+        self.model.to("cuda")
+
+    def inference(self):
+        for data_info in self.data_set:
+            index  = data_info["index"]
+            prompt = data_info["prompt"]
+            image = self.model(
+                         prompt=prompt,
+                         negative_prompt=PROMPT_REALISTIC_VISION_NEGATIVE,
                          num_inference_steps=28,
                          guidance_scale=7.0,
                          ).images[0]
@@ -322,5 +353,7 @@ class ModelFactory:
             return Playground(model_name=model_name)
         elif model_name == "realistic_vision":
             return RealisticVision6(model_name=model_name)
+        elif model_name == "absolute_reality":
+            return AbsoluteReality(model_name=model_name)
         else:
             raise ValueError(f"Unknown model name: {model_name}")
