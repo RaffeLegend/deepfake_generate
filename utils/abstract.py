@@ -7,7 +7,6 @@ from diffusers import AutoPipelineForText2Image, StableDiffusion3Pipeline, \
                       Kandinsky3Pipeline, DiffusionPipeline
 from sd_embed.embedding_funcs import get_weighted_text_embeddings_sd3
 from globals.prompt import NEGATIVE_PROMPT
-                      
 
 
 # define abstract class
@@ -272,6 +271,41 @@ class Playground(StableDiffusion):
             save_image(image, self.save_path, index)
         return 
 
+# define model realistic vision 6
+class RealisticVision6(StableDiffusion):
+    def __init__(self, model_name):
+        super().__init__()
+        self.prompt_set = None
+        self.model_name = model_name
+        self.model_path = "SG161222/Realistic_Vision_V6.0_B1_noVAE"
+        self.torch_dtype = torch.float16
+        self.variant = "fp16"
+        # self.custom_pipeline="lpw_stable_diffusion"
+        # self.save_path = self.get_save_path()
+
+    def init_model(self):
+        self.model = DiffusionPipeline.from_pretrained(
+                                    self.model_path,
+                                    )
+        self.model.to("cuda")
+
+    def inference(self):
+        for data_info in self.data_set:
+            index  = data_info["index"]
+            prompt = data_info["prompt"]
+            prompt_set = self.prompt_embedding(prompt, NEGATIVE_PROMPT)
+            prompt_embeds, prompt_neg_embeds, pooled_prompt_embeds, negative_pooled_prompt_embeds = prompt_set
+            image = self.model(
+                         prompt_embeds=prompt_embeds,
+                         pooled_prompt_embeds=pooled_prompt_embeds,
+                         negative_prompt_embeds=prompt_neg_embeds,
+                         negative_pooled_prompt_embeds=negative_pooled_prompt_embeds,
+                         num_inference_steps=28,
+                         guidance_scale=7.0,
+                         ).images[0]
+            save_image(image, self.save_path, index)
+        return 
+
 # model factory
 class ModelFactory:
     @staticmethod
@@ -290,5 +324,7 @@ class ModelFactory:
             return StableDiffusionXLwithRefiner(model_name=model_name)
         elif model_name == "playground":
             return Playground(model_name=model_name)
+        elif model_name == "realistic_vision":
+            return RealisticVision6(model_name=model_name)
         else:
             raise ValueError(f"Unknown model name: {model_name}")
