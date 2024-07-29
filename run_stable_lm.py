@@ -13,7 +13,9 @@ def parse_args():
     parser.add_argument("--prompt",  type=str, default="prompt.json", help="prompt path")
     parser.add_argument("--output_path",  type=str, default="./output", help="output path")
     parser.add_argument("--image_path",  type=str, default="", help="input image path")
-    parser.add_argument("--image_info_path", type=str, default="image_info.json")
+    parser.add_argument("--data_name", type=str, default="used", help="name of dataset")
+    parser.add_argument("--save_batch_size", type=int, default=1000, help="save size of image info")
+
     return parser.parse_args()
 
 if __name__ == "__main__":
@@ -23,7 +25,8 @@ if __name__ == "__main__":
     image_path  = args.image_path
     output_path = args.output_path
     prompt_path = args.prompt
-    image_info  = args.image_info_path
+    data_name   = args.data_name
+    save_size   = args.save_batch_size
 
     is_folder(output_path)
 
@@ -34,8 +37,8 @@ if __name__ == "__main__":
             model = LMModelFactory.get_model(model)
 
             # running pipeline to generate
-            model.get_save_path(output_path, prompt_path, image_info)
-            model.get_images_path(image_path)
+            model.get_save_path(output_path, prompt_path, data_name)
+            model.get_images_path(image_path, save_size)
             model.init_model()
             model.inference()
         except ModelExecuteError as e:

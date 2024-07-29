@@ -25,6 +25,7 @@ class StableLanguageModel:
         self.model_path = None
         self.save_path = None
         self.model = None
+        self.data_name = None
 
     # Encode the image at the given path to a base64 string
     def encode_image(self, image_path):
@@ -37,41 +38,59 @@ class StableLanguageModel:
         return encoded_image
 
     # set output path
-    def get_save_path(self, output_path, prompt_path, image_info_path):
+    def get_save_path(self, output_path, data_name):
+        self.data_name = data_name
         folder_path = os.path.join(output_path, self.model_name+ "_output")
         is_folder(folder_path)
         self.save_path = folder_path
-        self.prompt_path = os.path.join(self.save_path, prompt_path)
-        self.image_info_path = os.path.join(self.save_path, image_info_path)
-        return folder_path
+        return
+    
+    # save json file
+    def save_json(self, index):
+        index = str(index).zfill(4)
+        image_info_file_name = f"{self.data_name}_{index}.json"
+        json_path = os.path.join(self.save_path, image_info_file_name)
+        with open(json_path, "w") as f:
+            json.dump(json_path, f)
+        return
 
     # get the input image path
-    def get_images_path(self, set_path):
+    def get_images_path(self, set_path, save_size):
+
+        self.save_size = save_size
     
         file_paths = list()
         index = 0
+        index_file = 0
 
         for root, _, files in os.walk(set_path):
             for file in files:
                 file_info = dict()
-                file_info["index"] = str(index).zfill(8)
+                file_info["index"]     = str(index).zfill(9)
                 file_info["file_name"] = file
                 file_info["file_path"] = root
-                file_info["prompt"] = ""
+                file_info["prompt"]    = ""
+                file_info["text"]      = ""
                 file_paths.append(file_info)
                 index += 1
 
-        with open(self.image_info_path, "w") as f:
-            json.dump(file_paths, f)
+                if index % self.batch_size == 0 and index != 0:
+                    self.save_json(index_file)
+                    index_file += 1
+                    file_info = dict()
 
+            self.save_json(index_file)
         return
       
     # Load data from Json
     def load_data(self):
-        with open(self.image_info_path, 'r') as f:
-            data = json.load(f)
+        info_dict = ()
+        for root, _, files in os.walk(self.save_path):
+            for file in files:
+                info_path = os.path.join(root, file)
+                info_dict.append(info_path)
 
-        return data
+        return info_dict
 
     def init_model(self, data):
         raise NotImplementedError("Subclasses should implement this!")
@@ -113,21 +132,26 @@ class StableLanguageModel2_12B(StableLanguageModel):
         print(self.tokenizer.decode(tokens[0], skip_special_tokens=True))
         return self.tokenizer.decode(tokens[0], skip_special_tokens=True)
 
+    # define the conduct step
+    def conduct(self, path, name):
+        image_path = os.path.join(path, name)
+        image_des_format = self.load_image(image_path, max_num=6).to(self.torch_dtype).cuda()
+        description = self.generate_description(image_des_format)
+        return description
+
     def inference(self):
 
-        data = self.load_data()
+        data_sets = self.load_data()
+        for data_set in data_sets:
+            with open(data_set, 'rw') as f:
+                data = json.load(f)
+                for image_info in data:
+                    file_path = image_info["file_path"]
+                    file_name = image_info["file_name"]
+                    description = self.condct(file_path, file_name)
+                    image_info["prompt"] = description
 
-        for image_info in data:
-            file_path = image_info["file_path"]
-            file_name = image_info["file_name"]
-            image_des_format = self.get_image_des_format(os.path.join(file_path, file_name))
-            description = self.generate_description_with_lm(image_des_format)
-            image_info["prompt"] = description
-
-        with open(self.image_info_path, 'w') as f:
-            json.dump(data, f)
-
-        return 
+                json.dump(data, f)
  
 # define model InternVL 2
 class InternVL2(StableLanguageModel):
@@ -263,20 +287,26 @@ class InternVL2(StableLanguageModel):
         print(f'Assistant: {response}')
         return response
 
+    # define the conduct step
+    def conduct(self, path, name):
+        image_path = os.path.join(path, name)
+        image_des_format = self.load_image(image_path, max_num=6).to(self.torch_dtype).cuda()
+        description = self.generate_description(image_des_format)
+        return description
+
     def inference(self):
 
-        data = self.load_data()
+        data_sets = self.load_data()
+        for data_set in data_sets:
+            with open(data_set, 'rw') as f:
+                data = json.load(f)
+                for image_info in data:
+                    file_path = image_info["file_path"]
+                    file_name = image_info["file_name"]
+                    description = self.condct(file_path, file_name)
+                    image_info["prompt"] = description
 
-        for image_info in data:
-            file_path = image_info["file_path"]
-            file_name = image_info["file_name"]
-            image_path = os.path.join(file_path, file_name)
-            image_des_format = self.load_image(image_path, max_num=6).to(self.torch_dtype).cuda()
-            description = self.generate_description(image_des_format)
-            image_info["prompt"] = description
-
-        with open(self.image_info_path, 'w') as f:
-            json.dump(data, f)
+                json.dump(data, f)
 
         return 
 
