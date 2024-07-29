@@ -26,6 +26,7 @@ class StableLanguageModel:
         self.save_path = None
         self.model = None
         self.data_name = None
+        self.save_size = None
 
     # Encode the image at the given path to a base64 string
     def encode_image(self, image_path):
@@ -74,7 +75,7 @@ class StableLanguageModel:
                 file_paths.append(file_info)
                 index += 1
 
-                if index % self.batch_size == 0 and index != 0:
+                if index % self.save_size == 0 and index != 0:
                     self.save_json(index_file)
                     index_file += 1
                     file_info = dict()
