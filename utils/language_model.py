@@ -85,13 +85,13 @@ class StableLanguageModel:
       
     # Load data from Json
     def load_data(self):
-        info_dict = ()
+        info_list = list()
         for root, _, files in os.walk(self.save_path):
             for file in files:
                 info_path = os.path.join(root, file)
-                info_dict.append(info_path)
+                info_list.append(info_path)
 
-        return info_dict
+        return info_list
 
     def init_model(self, data):
         raise NotImplementedError("Subclasses should implement this!")
