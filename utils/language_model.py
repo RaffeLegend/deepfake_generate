@@ -299,7 +299,7 @@ class InternVL2(StableLanguageModel):
 
         data_sets = self.load_data()
         for data_set in data_sets:
-            with open(data_set, 'rw') as f:
+            with open(data_set, 'w') as f:
                 data = json.load(f)
                 for image_info in data:
                     file_path = image_info["file_path"]

@@ -327,7 +327,7 @@ class AbsoluteReality(StableDiffusion):
             image = self.model(
                          prompt=prompt,
                          negative_prompt=PROMPT_REALISTIC_VISION_NEGATIVE,
-                         num_inference_steps=28,
+                         num_inference_steps=40,
                          guidance_scale=7.0,
                          ).images[0]
             save_image(image, self.save_path, index)
