@@ -61,8 +61,8 @@ class StableLanguageModel:
         self.save_size = save_size
     
         file_paths = list()
-        index = 1
-        index_file = 1
+        index = 0
+        index_file = 0
 
         for root, _, files in os.walk(set_path):
             for file in files:
@@ -75,7 +75,7 @@ class StableLanguageModel:
                 file_paths.append(file_info)
                 index += 1
 
-                if index % self.save_size == 0:
+                if index % self.save_size == 0 and index != 0:
                     self.save_json(file_paths, index_file)
                     index_file += 1
                     file_paths = list()
@@ -304,7 +304,7 @@ class InternVL2(StableLanguageModel):
                 for image_info in data:
                     file_path = image_info["file_path"]
                     file_name = image_info["file_name"]
-                    description = self.condct(file_path, file_name)
+                    description = self.conduct(file_path, file_name)
                     image_info["prompt"] = description
 
             with open(data_set, 'w') as f:
