@@ -299,7 +299,7 @@ class InternVL2(StableLanguageModel):
 
         data_sets = self.load_data()
         for data_set in data_sets:
-            with open(data_set, 'w') as f:
+            with open(data_set, 'r') as f:
                 data = json.load(f)
                 for image_info in data:
                     file_path = image_info["file_path"]
@@ -307,6 +307,7 @@ class InternVL2(StableLanguageModel):
                     description = self.condct(file_path, file_name)
                     image_info["prompt"] = description
 
+            with open(data_set, 'w') as f:
                 json.dump(data, f)
 
         return 
