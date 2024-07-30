@@ -78,7 +78,7 @@ class StableLanguageModel:
                 if index % self.save_size == 0 and index != 0:
                     self.save_json(file_paths, index_file)
                     index_file += 1
-                    file_info = dict()
+                    file_paths = list()
 
             self.save_json(file_paths, index_file)
         return
