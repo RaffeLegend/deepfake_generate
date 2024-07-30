@@ -47,12 +47,12 @@ class StableLanguageModel:
         return
     
     # save json file
-    def save_json(self, index):
+    def save_json(self, data, index):
         index = str(index).zfill(4)
         image_info_file_name = f"{self.data_name}_{index}.json"
         json_path = os.path.join(self.save_path, image_info_file_name)
         with open(json_path, "w") as f:
-            json.dump(json_path, f)
+            json.dump(data, f)
         return
 
     # get the input image path
@@ -76,11 +76,11 @@ class StableLanguageModel:
                 index += 1
 
                 if index % self.save_size == 0 and index != 0:
-                    self.save_json(index_file)
+                    self.save_json(file_info, index_file)
                     index_file += 1
                     file_info = dict()
 
-            self.save_json(index_file)
+            self.save_json(file_info, index_file)
         return
       
     # Load data from Json
