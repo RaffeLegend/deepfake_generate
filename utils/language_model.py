@@ -2,13 +2,14 @@ import os
 import torch
 import math
 from utils.utils import save_image, is_folder
+from utils.exception import ModelExecuteError
 from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel
 import json
 
 import torchvision.transforms as T
 from torchvision.transforms.functional import InterpolationMode
 
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 import base64
 from io import BytesIO
 
@@ -27,6 +28,7 @@ class StableLanguageModel:
         self.model = None
         self.data_name = None
         self.save_size = None
+        self.image_format = None
 
     # Encode the image at the given path to a base64 string
     def encode_image(self, image_path):
@@ -56,9 +58,10 @@ class StableLanguageModel:
         return
 
     # get the input image path
-    def get_images_path(self, set_path, save_size):
+    def get_images_path(self, set_path, save_size, image_format):
 
         self.save_size = save_size
+        self.image_format = image_format
     
         file_paths = list()
         index = 0
@@ -72,13 +75,14 @@ class StableLanguageModel:
                 file_info["file_path"] = root
                 file_info["prompt"]    = ""
                 file_info["text"]      = ""
-                file_paths.append(file_info)
-                index += 1
+                if file.split(".")[-1] == self.image_format:
+                    file_paths.append(file_info)
+                    index += 1
 
-                if index % self.save_size == 0 and index != 0:
-                    self.save_json(file_paths, index_file)
-                    index_file += 1
-                    file_paths = list()
+                    if index % self.save_size == 0 and index != 0:
+                        self.save_json(file_paths, index_file)
+                        index_file += 1
+                        file_paths = list()
 
             self.save_json(file_paths, index_file)
         return
@@ -274,12 +278,16 @@ class InternVL2(StableLanguageModel):
         return processed_images
     
     def load_image(self, image_file, max_num=6):
-        image = Image.open(image_file).convert('RGB')
-        transform = self.build_transform()
-        images = self.dynamic_preprocess(image, use_thumbnail=True, max_num=max_num)
-        pixel_values = [transform(image) for image in images]
-        pixel_values = torch.stack(pixel_values)
-        return pixel_values
+        try:
+            image = Image.open(image_file).convert('RGB')
+            transform = self.build_transform()
+            images = self.dynamic_preprocess(image, use_thumbnail=True, max_num=max_num)
+            pixel_values = [transform(image) for image in images]
+            pixel_values = torch.stack(pixel_values)
+            return pixel_values
+        except (UnidentifiedImageError) as e:
+            print(f"Failed to load the image {image_file}: {e}")
+            return None
     
     def generate_description(self, pixel_values):
         # single-image single-round conversation
@@ -292,7 +300,10 @@ class InternVL2(StableLanguageModel):
     def conduct(self, path, name):
         image_path = os.path.join(path, name)
         image_des_format = self.load_image(image_path, max_num=6).to(self.torch_dtype).cuda()
-        description = self.generate_description(image_des_format)
+        if image_des_format is not None:
+            description = self.generate_description(image_des_format)
+        else:
+            description = ""
         return description
 
     def inference(self):

@@ -14,6 +14,7 @@ def parse_args():
     parser.add_argument("--image_path",  type=str, default="", help="input image path")
     parser.add_argument("--data_name", type=str, default="used", help="name of dataset")
     parser.add_argument("--save_batch_size", type=int, default=1000, help="save size of image info")
+    parser.add_argument("--image_format", type=str, default="jpg", help="input image format")
 
     return parser.parse_args()
 
@@ -25,6 +26,7 @@ if __name__ == "__main__":
     output_path = args.output_path
     data_name   = args.data_name
     save_size   = args.save_batch_size
+    image_format = args.image_format
 
     is_folder(output_path)
 
@@ -36,7 +38,7 @@ if __name__ == "__main__":
 
             # running pipeline to generate
             model.get_save_path(output_path, data_name)
-            model.get_images_path(image_path, save_size)
+            model.get_images_path(image_path, save_size, image_format)
             model.init_model()
             model.inference()
         except ModelExecuteError as e:
