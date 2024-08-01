@@ -300,8 +300,9 @@ class InternVL2(StableLanguageModel):
     # define the conduct step
     def conduct(self, path, name):
         image_path = os.path.join(path, name)
-        image_des_format = self.load_image(image_path, max_num=6).to(self.torch_dtype).cuda()
-        if image_des_format is not None:
+        image = self.load_image(image_path, max_num=6)
+        if image is not None:
+            image_des_format = image.to(self.torch_dtype).cuda()
             description = self.generate_description(image_des_format)
         else:
             description = ""
