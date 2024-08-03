@@ -26,11 +26,16 @@ class StableDiffusion:
         self.save_path = folder_path
         return folder_path
     
-    def load_data(self, image_info_path):
-        with open(image_info_path, 'r') as f:
-            data_set = json.load(f)
-        print(f"Collect {len(data_set)} prompts to generate images")
-        self.data_set = data_set
+    # Load data from Json
+    def load_data(self):
+        info_list = list()
+        for root, _, files in os.walk(self.save_path):
+            for file in files:
+                info_path = os.path.join(root, file)
+                info_list.append(info_path)
+
+        self.data_sets = info_list
+        return info_list
 
     # embedding the prompt
     def prompt_embedding(self, prompt, negative_prompt):
@@ -61,12 +66,13 @@ class StableDiffusionXLTurbo(StableDiffusion):
         self.model.to("cuda")
 
     def inference(self):
-        for data_info in self.data_set:
-            index  = data_info["index"]
-            prompt = data_info["prompt"]
-            image = self.model(prompt=prompt, num_inference_steps=3, guidance_scale=0.3).images[0]
-            save_image(image, self.save_path, index)
-        return 
+        for patch_data in self.data_sets:
+            for data_info in patch_data:
+                index  = data_info["index"]
+                prompt = data_info["prompt"]
+                image = self.model(prompt=prompt, num_inference_steps=3, guidance_scale=0.3).images[0]
+                save_image(image, self.save_path, index)
+            return 
 
 # define model sdxl
 class StableDiffusionXL(StableDiffusion):
@@ -84,11 +90,12 @@ class StableDiffusionXL(StableDiffusion):
         self.model.to("cuda")
 
     def inference(self):
-        for data_info in self.data_set:
-            index  = data_info["index"]
-            prompt = data_info["prompt"]
-            image = self.model(prompt=prompt, num_inference_steps=40, guidance_scale=0.3).images[0]
-            save_image(image, self.save_path, index)
+        for patch_data in self.data_sets:
+            for data_info in patch_data:
+                index  = data_info["index"]
+                prompt = data_info["prompt"]
+                image = self.model(prompt=prompt, num_inference_steps=40, guidance_scale=0.3).images[0]
+                save_image(image, self.save_path, index)
         return 
     
 # define model sd3-medium
@@ -111,20 +118,21 @@ class StableDiffusion3Medium(StableDiffusion):
         self.model.to("cuda")
 
     def inference(self):
-        for data_info in self.data_set:
-            index  = data_info["index"]
-            prompt = data_info["prompt"]
-            prompt_set = self.prompt_embedding(prompt, NEGATIVE_PROMPT)
-            prompt_embeds, prompt_neg_embeds, pooled_prompt_embeds, negative_pooled_prompt_embeds = prompt_set
-            image = self.model(
-                         prompt_embeds=prompt_embeds,
-                         pooled_prompt_embeds=pooled_prompt_embeds,
-                         negative_prompt_embeds=prompt_neg_embeds,
-                         negative_pooled_prompt_embeds=negative_pooled_prompt_embeds,
-                         num_inference_steps=28,
-                         guidance_scale=7.0,
-                         ).images[0]
-            save_image(image, self.save_path, index)
+        for patch_data in self.data_sets:
+            for data_info in patch_data:
+                index  = data_info["index"]
+                prompt = data_info["prompt"]
+                prompt_set = self.prompt_embedding(prompt, NEGATIVE_PROMPT)
+                prompt_embeds, prompt_neg_embeds, pooled_prompt_embeds, negative_pooled_prompt_embeds = prompt_set
+                image = self.model(
+                             prompt_embeds=prompt_embeds,
+                             pooled_prompt_embeds=pooled_prompt_embeds,
+                             negative_prompt_embeds=prompt_neg_embeds,
+                             negative_pooled_prompt_embeds=negative_pooled_prompt_embeds,
+                             num_inference_steps=28,
+                             guidance_scale=7.0,
+                             ).images[0]
+                save_image(image, self.save_path, index)
         return 
 
 # define model sd cascade
@@ -148,10 +156,11 @@ class StableDiffusionCascade(StableDiffusion):
         # decoder.enable_model_cpu_offload()
 
     def inference(self):
-        for data_info in self.data_set:
-            index  = data_info["index"]
-            prompt = data_info["prompt"]
-            prior_output = self.prior(
+        for patch_data in self.data_sets:
+            for data_info in patch_data:
+                index  = data_info["index"]
+                prompt = data_info["prompt"]
+                prior_output = self.prior(
                                  prompt=prompt,
                                  height=1024,
                                  width=1024,
@@ -161,7 +170,7 @@ class StableDiffusionCascade(StableDiffusion):
                                  num_inference_steps=20
                                 )
 
-            decoder_output = self.decoder(
+                decoder_output = self.decoder(
                                  image_embeddings=prior_output.image_embeddings.to(torch.float16),
                                  prompt=prompt,
                                  negative_prompt=self.negative_prompt,
@@ -170,7 +179,7 @@ class StableDiffusionCascade(StableDiffusion):
                                  num_inference_steps=10
                                 ).images[0]
 
-            save_image(decoder_output, self.save_path, index)
+                save_image(decoder_output, self.save_path, index)
         return 
     
 # define model sd cascade
@@ -190,11 +199,12 @@ class Kandinsky3(StableDiffusion):
         self.model.enable_model_cpu_offload()
 
     def inference(self):
-        for data_info in self.data_set:
-            index  = data_info["index"]
-            prompt = data_info["prompt"]
-            image = self.model(prompt).images[0]
-            save_image(image, self.save_path, index)
+        for patch_data in self.data_sets:
+            for data_info in patch_data:
+                index  = data_info["index"]
+                prompt = data_info["prompt"]
+                image = self.model(prompt).images[0]
+                save_image(image, self.save_path, index)
         return 
 
 # define model sd cascade
@@ -226,22 +236,23 @@ class StableDiffusionXLwithRefiner(StableDiffusion):
                             ).to("cuda")
 
     def inference(self):
-        for data_info in self.data_set:
-            index  = data_info["index"]
-            prompt = data_info["prompt"]
-            image = self.base(
-                        prompt=prompt,
-                        num_inference_steps=40,
-                        denoising_end=0.8,
-                        output_type="latent",
-                        ).images
-            image = self.refiner(
-                        prompt=prompt,
-                        num_inference_steps=40,
-                        denoising_start=0.8,
-                        image=image,
-                        ).images[0]
-            save_image(image, self.save_path, index)
+        for patch_data in self.data_sets:
+            for data_info in patch_data:
+                index  = data_info["index"]
+                prompt = data_info["prompt"]
+                image = self.base(
+                            prompt=prompt,
+                            num_inference_steps=40,
+                            denoising_end=0.8,
+                            output_type="latent",
+                            ).images
+                image = self.refiner(
+                            prompt=prompt,
+                            num_inference_steps=40,
+                            denoising_start=0.8,
+                            image=image,
+                            ).images[0]
+                save_image(image, self.save_path, index)
         return 
 
 # define model playground
@@ -290,16 +301,17 @@ class RealisticVision6(StableDiffusion):
         self.model.to("cuda")
 
     def inference(self):
-        for data_info in self.data_set:
-            index  = data_info["index"]
-            prompt = data_info["prompt"]
-            image = self.model(
-                         prompt=prompt,
-                         negative_prompt=PROMPT_REALISTIC_VISION_NEGATIVE,
-                         num_inference_steps=40,
-                         guidance_scale=7.0,
-                         ).images[0]
-            save_image(image, self.save_path, index)
+        for patch_data in self.data_sets:
+            for data_info in patch_data:
+                index  = data_info["index"]
+                prompt = data_info["prompt"]
+                image = self.model(
+                            prompt=prompt,
+                            negative_prompt=PROMPT_REALISTIC_VISION_NEGATIVE,
+                            num_inference_steps=40,
+                            guidance_scale=7.0,
+                            ).images[0]
+                save_image(image, self.save_path, index)
         return 
 
 # define model absolute reality
@@ -321,16 +333,17 @@ class AbsoluteReality(StableDiffusion):
         self.model.to("cuda")
 
     def inference(self):
-        for data_info in self.data_set:
-            index  = data_info["index"]
-            prompt = data_info["prompt"]
-            image = self.model(
-                         prompt=prompt,
-                         negative_prompt=PROMPT_REALISTIC_VISION_NEGATIVE,
-                         num_inference_steps=40,
-                         guidance_scale=7.0,
-                         ).images[0]
-            save_image(image, self.save_path, index)
+        for patch_data in self.data_sets:
+            for data_info in patch_data:
+                index  = data_info["index"]
+                prompt = data_info["prompt"]
+                image = self.model(
+                            prompt=prompt,
+                            negative_prompt=PROMPT_REALISTIC_VISION_NEGATIVE,
+                            num_inference_steps=40,
+                            guidance_scale=7.0,
+                            ).images[0]
+                save_image(image, self.save_path, index)
         return 
 
 # model factory
