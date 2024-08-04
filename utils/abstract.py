@@ -291,13 +291,9 @@ class Playground(StableDiffusion):
             for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
-                prompt_set = self.prompt_embedding(prompt, NEGATIVE_PROMPT)
-                prompt_embeds, prompt_neg_embeds, pooled_prompt_embeds, negative_pooled_prompt_embeds = prompt_set
+                # prompt_set = self.prompt_embedding(prompt, NEGATIVE_PROMPT)
+                # prompt_embeds, prompt_neg_embeds, pooled_prompt_embeds, negative_pooled_prompt_embeds = prompt_set
                 image = self.model(prompt=prompt, 
-                                   prompt_embeds=prompt_embeds,
-                                   pooled_prompt_embeds=pooled_prompt_embeds,
-                                   negative_prompt_embeds=prompt_neg_embeds,
-                                   negative_pooled_prompt_embeds=negative_pooled_prompt_embeds,
                                    num_inference_steps=50, 
                                    guidance_scale=3
                                    ).images[0]
