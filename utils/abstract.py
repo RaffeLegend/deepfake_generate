@@ -36,6 +36,11 @@ class StableDiffusion:
 
         self.data_sets = info_list
         return info_list
+    
+    def load_json(self, prompt_json):
+        with open(prompt_json, 'r') as f:
+            data = json.load(f)
+        return data
 
     # embedding the prompt
     def prompt_embedding(self, prompt, negative_prompt):
@@ -67,7 +72,8 @@ class StableDiffusionXLTurbo(StableDiffusion):
 
     def inference(self):
         for patch_data in self.data_sets:
-            for data_info in patch_data:
+            json_data = self.load_json(patch_data)
+            for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
                 image = self.model(prompt=prompt, num_inference_steps=3, guidance_scale=0.3).images[0]
@@ -91,7 +97,8 @@ class StableDiffusionXL(StableDiffusion):
 
     def inference(self):
         for patch_data in self.data_sets:
-            for data_info in patch_data:
+            json_data = self.load_json(patch_data)
+            for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
                 image = self.model(prompt=prompt, num_inference_steps=40, guidance_scale=0.3).images[0]
@@ -119,7 +126,8 @@ class StableDiffusion3Medium(StableDiffusion):
 
     def inference(self):
         for patch_data in self.data_sets:
-            for data_info in patch_data:
+            json_data = self.load_json(patch_data)
+            for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
                 prompt_set = self.prompt_embedding(prompt, NEGATIVE_PROMPT)
@@ -157,7 +165,8 @@ class StableDiffusionCascade(StableDiffusion):
 
     def inference(self):
         for patch_data in self.data_sets:
-            for data_info in patch_data:
+            json_data = self.load_json(patch_data)
+            for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
                 prior_output = self.prior(
@@ -200,7 +209,8 @@ class Kandinsky3(StableDiffusion):
 
     def inference(self):
         for patch_data in self.data_sets:
-            for data_info in patch_data:
+            json_data = self.load_json(patch_data)
+            for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
                 image = self.model(prompt).images[0]
@@ -237,7 +247,8 @@ class StableDiffusionXLwithRefiner(StableDiffusion):
 
     def inference(self):
         for patch_data in self.data_sets:
-            for data_info in patch_data:
+            json_data = self.load_json(patch_data)
+            for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
                 image = self.base(
@@ -276,7 +287,8 @@ class Playground(StableDiffusion):
 
     def inference(self):
         for patch_data in self.data_sets:
-            for data_info in patch_data:
+            json_data = self.load_json(patch_data)
+            for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
                 prompt_set = self.prompt_embedding(prompt, NEGATIVE_PROMPT)
@@ -312,7 +324,8 @@ class RealisticVision6(StableDiffusion):
 
     def inference(self):
         for patch_data in self.data_sets:
-            for data_info in patch_data:
+            json_data = self.load_json(patch_data)
+            for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
                 image = self.model(
@@ -344,7 +357,8 @@ class AbsoluteReality(StableDiffusion):
 
     def inference(self):
         for patch_data in self.data_sets:
-            for data_info in patch_data:
+            json_data = self.load_json(patch_data)
+            for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
                 image = self.model(
