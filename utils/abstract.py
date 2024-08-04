@@ -114,6 +114,7 @@ class StableDiffusion3Medium(StableDiffusion):
         self.model_path = "stabilityai/stable-diffusion-3-medium-diffusers"
         self.torch_dtype = torch.float16
         self.variant = "fp16"
+        self.sampler = "K_DPMPP_2S_ANCESTRAL"
         # self.custom_pipeline="lpw_stable_diffusion"
         # self.save_path = self.get_save_path()
 
@@ -137,8 +138,9 @@ class StableDiffusion3Medium(StableDiffusion):
                              pooled_prompt_embeds=pooled_prompt_embeds,
                              negative_prompt_embeds=prompt_neg_embeds,
                              negative_pooled_prompt_embeds=negative_pooled_prompt_embeds,
-                             num_inference_steps=28,
-                             guidance_scale=7.0,
+                             sampler=self.sampler,
+                             num_inference_steps=30,
+                             guidance_scale=9.0,
                              ).images[0]
                 save_image(image, self.save_path, index)
         return 
