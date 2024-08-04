@@ -275,11 +275,21 @@ class Playground(StableDiffusion):
                                         ).to("cuda")
 
     def inference(self):
-        for data_info in self.data_set:
-            index  = data_info["index"]
-            prompt = data_info["prompt"]
-            image = self.model(prompt=prompt, num_inference_steps=50, guidance_scale=3).images[0]
-            save_image(image, self.save_path, index)
+        for patch_data in self.data_sets:
+            for data_info in patch_data:
+                index  = data_info["index"]
+                prompt = data_info["prompt"]
+                prompt_set = self.prompt_embedding(prompt, NEGATIVE_PROMPT)
+                prompt_embeds, prompt_neg_embeds, pooled_prompt_embeds, negative_pooled_prompt_embeds = prompt_set
+                image = self.model(prompt=prompt, 
+                                   prompt_embeds=prompt_embeds,
+                                   pooled_prompt_embeds=pooled_prompt_embeds,
+                                   negative_prompt_embeds=prompt_neg_embeds,
+                                   negative_pooled_prompt_embeds=negative_pooled_prompt_embeds,
+                                   num_inference_steps=50, 
+                                   guidance_scale=3
+                                   ).images[0]
+                save_image(image, self.save_path, index)
         return 
 
 # define model realistic vision 6
