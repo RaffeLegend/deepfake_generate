@@ -27,9 +27,9 @@ class StableDiffusion:
         return folder_path
     
     # Load data from Json
-    def load_data(self):
+    def load_data(self, prompt_path):
         info_list = list()
-        for root, _, files in os.walk(self.save_path):
+        for root, _, files in os.walk(prompt_path):
             for file in files:
                 info_path = os.path.join(root, file)
                 info_list.append(info_path)
