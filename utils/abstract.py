@@ -138,7 +138,6 @@ class StableDiffusion3Medium(StableDiffusion):
                              pooled_prompt_embeds=pooled_prompt_embeds,
                              negative_prompt_embeds=prompt_neg_embeds,
                              negative_pooled_prompt_embeds=negative_pooled_prompt_embeds,
-                             sampler=self.sampler,
                              num_inference_steps=30,
                              guidance_scale=9.0,
                              ).images[0]
