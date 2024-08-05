@@ -1,7 +1,7 @@
 import os
 import torch
 import json
-import Image
+from PIL import Image
 from utils.utils import save_image, is_folder
 from diffusers import AutoPipelineForText2Image, StableDiffusion3Pipeline, \
                       StableCascadeDecoderPipeline, StableCascadePriorPipeline, \
