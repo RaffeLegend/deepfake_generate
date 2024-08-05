@@ -1,10 +1,12 @@
 import os
 import torch
 import json
+import Image
 from utils.utils import save_image, is_folder
 from diffusers import AutoPipelineForText2Image, StableDiffusion3Pipeline, \
                       StableCascadeDecoderPipeline, StableCascadePriorPipeline, \
-                      Kandinsky3Pipeline, DiffusionPipeline
+                      Kandinsky3Pipeline, DiffusionPipeline, \
+                      StableDiffusionImg2ImgPipeline
 from sd_embed.embedding_funcs import get_weighted_text_embeddings_sd3
 from globals.prompt import NEGATIVE_PROMPT, PROMPT_REALISTIC_VISION_NEGATIVE
 
@@ -41,6 +43,10 @@ class StableDiffusion:
         with open(prompt_json, 'r') as f:
             data = json.load(f)
         return data
+    
+    # loading image as input
+    def load_image(self, path):
+        return Image.open(path).convert("RGB")
 
     # embedding the prompt
     def prompt_embedding(self, prompt, negative_prompt):
@@ -367,6 +373,42 @@ class AbsoluteReality(StableDiffusion):
                 save_image(image, self.save_path, index)
         return 
 
+# define Stable Diffusion 2 for image to image task
+class Image2ImageSD2(StableDiffusion):
+    def __init__(self, model_name):
+        super().__init__()
+        self.prompt_set = None
+        self.model_name = model_name
+        self.model_path = "runwayml/stable-diffusion-v1-5"
+        self.torch_dtype = torch.float16
+        self.variant = "fp16"
+        # self.custom_pipeline="lpw_stable_diffusion"
+        # self.save_path = self.get_save_path()
+
+    def init_model(self):
+        self.model = StableDiffusionImg2ImgPipeline.from_pretrained(
+                                    self.model_path,
+                                    torch_dtype=self.torch_dtype,
+                                    )
+        self.model.to("cuda")
+
+    def inference(self):
+        for patch_data in self.data_sets:
+            json_data = self.load_json(patch_data)
+            for data_info in json_data:
+                index  = data_info["index"]
+                prompt = data_info["prompt"]
+                path   = os.path.join(data_info["file_path"], data_info["file_name"])
+                input  = self.load_image(path).resize((768, 512))
+                image  = self.model(
+                            prompt=prompt,
+                            image=input,
+                            strength=0.75,
+                            guidance_scale=7.5,
+                            ).images[0]
+                save_image(image, self.save_path, index)
+        return 
+
 # model factory
 class ModelFactory:
     @staticmethod
@@ -389,5 +431,7 @@ class ModelFactory:
             return RealisticVision6(model_name=model_name)
         elif model_name == "absolute_reality":
             return AbsoluteReality(model_name=model_name)
+        elif model_name == "sd2_i2i":
+            return Image2ImageSD2(model_name=model_name)
         else:
             raise ValueError(f"Unknown model name: {model_name}")
