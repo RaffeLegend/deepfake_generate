@@ -30,12 +30,20 @@ class StableDiffusion:
     def set_prompt_enhancer(self):
         if self.prompt_enhancer == "gpt2":
             self.enhancer = PromptEnhancer()
+            self.model.load_lora_weights(
+                                "stabilityai/stable-diffusion-xl-base-1.0",
+                                weight_name="sd_xl_offset_example-lora_1.0.safetensors",
+                                adapter_name="offset",
+                                )
+            self.model.set_adapters(["offset"], adapter_weights=[0.2])
         else:
             self.enhancer = None
 
     def prompt_process(self, prompt, negative_prompt):
         if self.enhancer is not None:
             enhanced_prompt = self.enhancer(prompt, self.style)
+        else:
+            enhanced_prompt = prompt
         
         if self.prompt_post:
             return self.prompt_embedding(enhanced_prompt, negative_prompt)
@@ -315,13 +323,6 @@ class Playground(StableDiffusion):
                                         ).to("cuda")
         
         self.set_prompt_enhancer()
-        if self.enhancer is not None:
-            self.model.load_lora_weights(
-                                        "stabilityai/stable-diffusion-xl-base-1.0",
-                                        weight_name="sd_xl_offset_example-lora_1.0.safetensors",
-                                        adapter_name="offset",
-                                        )
-            self.model.set_adapters(["offset"], adapter_weights=[0.2])
 
     def inference(self):
         for patch_data in self.data_sets:
@@ -354,6 +355,7 @@ class RealisticVision6(StableDiffusion):
                                     self.model_path,
                                     )
         self.model.to("cuda")
+        self.set_prompt_enhancer()
 
     def inference(self):
         for patch_data in self.data_sets:
@@ -361,6 +363,7 @@ class RealisticVision6(StableDiffusion):
             for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
+                prompt = self.prompt_process(prompt, NEGATIVE_PROMPT)
                 image = self.model(
                             prompt=prompt,
                             negative_prompt=PROMPT_REALISTIC_VISION_NEGATIVE,
@@ -387,6 +390,7 @@ class AbsoluteReality(StableDiffusion):
                                     self.model_path,
                                     )
         self.model.to("cuda")
+        self.set_prompt_enhancer()
 
     def inference(self):
         for patch_data in self.data_sets:
@@ -394,6 +398,7 @@ class AbsoluteReality(StableDiffusion):
             for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
+                prompt = self.prompt_process(prompt, NEGATIVE_PROMPT)
                 image = self.model(
                             prompt=prompt,
                             negative_prompt=PROMPT_REALISTIC_VISION_NEGATIVE,
@@ -456,6 +461,7 @@ class JuggernautXL(StableDiffusion):
                                     self.model_path,
                                     )
         self.model.to("cuda")
+        self.set_prompt_enhancer()
 
     def inference(self):
         for patch_data in self.data_sets:
@@ -463,7 +469,7 @@ class JuggernautXL(StableDiffusion):
             for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
-                prompt = self.prompt_process(prompt, "")
+                prompt = self.prompt_process(prompt, NEGATIVE_PROMPT)
                 image = self.model(
                             prompt=prompt,
                             negative_prompt=PROMPT_REALISTIC_VISION_NEGATIVE,
