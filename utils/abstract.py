@@ -9,6 +9,7 @@ from diffusers import AutoPipelineForText2Image, StableDiffusion3Pipeline, \
                       StableDiffusionImg2ImgPipeline
 from sd_embed.embedding_funcs import get_weighted_text_embeddings_sd3
 from globals.prompt import NEGATIVE_PROMPT, PROMPT_REALISTIC_VISION_NEGATIVE
+from globals.prompt_enhance import PromptEnhancer
 
 
 # define abstract class
@@ -21,7 +22,31 @@ class StableDiffusion:
         self.model_path = None
         self.save_path = None
         self.model = None
+        self.prompt_enhancer = "gpt2"
+        self.style = "photographic"
+        self.prompt_post = False
 
+    def set_prompt_enhancer(self):
+        if self.prompt_enhancer == "gpt2":
+            self.enhancer = PromptEnhancer()
+        else:
+            self.enhancer = None
+
+    def prompt_process(self, prompt, negative_prompt):
+        if self.enhancer is not None:
+            enhanced_prompt = self.enhancer(prompt, self.style)
+        
+        if self.prompt_post:
+            return self.prompt_embedding(enhanced_prompt, negative_prompt)
+        else:
+            return enhanced_prompt
+
+    # embedding the prompt
+    def prompt_embedding(self, prompt, negative_prompt):
+        prompt_set = get_weighted_text_embeddings_sd3(self.model, prompt = prompt, neg_prompt = negative_prompt)
+
+        return prompt_set
+    
     def get_save_path(self, output_path):
         folder_path = os.path.join(output_path, self.model_name+ "_output")
         is_folder(folder_path)
@@ -47,12 +72,6 @@ class StableDiffusion:
     # loading image as input
     def load_image(self, path):
         return Image.open(path).convert("RGB")
-
-    # embedding the prompt
-    def prompt_embedding(self, prompt, negative_prompt):
-        prompt_set = get_weighted_text_embeddings_sd3(self.model, prompt = prompt, neg_prompt = negative_prompt)
-
-        return prompt_set
 
     def conduct(self, data):
         raise NotImplementedError("Subclasses should implement this!")
@@ -121,6 +140,8 @@ class StableDiffusion3Medium(StableDiffusion):
         self.torch_dtype = torch.float16
         self.variant = "fp16"
         self.sampler = "K_DPMPP_2S_ANCESTRAL"
+        self.enhancer = None
+        self.prompt_post = True
         # self.custom_pipeline="lpw_stable_diffusion"
         # self.save_path = self.get_save_path()
 
@@ -137,7 +158,7 @@ class StableDiffusion3Medium(StableDiffusion):
             for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
-                prompt_set = self.prompt_embedding(prompt, NEGATIVE_PROMPT)
+                prompt_set = self.prompt_process(prompt, NEGATIVE_PROMPT)
                 prompt_embeds, prompt_neg_embeds, pooled_prompt_embeds, negative_pooled_prompt_embeds = prompt_set
                 image = self.model(
                              prompt_embeds=prompt_embeds,
@@ -298,8 +319,7 @@ class Playground(StableDiffusion):
             for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
-                # prompt_set = self.prompt_embedding(prompt, NEGATIVE_PROMPT)
-                # prompt_embeds, prompt_neg_embeds, pooled_prompt_embeds, negative_pooled_prompt_embeds = prompt_set
+                prompt = self.prompt_process(prompt, NEGATIVE_PROMPT)
                 image = self.model(prompt=prompt, 
                                    num_inference_steps=50, 
                                    guidance_scale=3
@@ -408,6 +428,40 @@ class Image2ImageSD2(StableDiffusion):
                             ).images[0]
                 save_image(image, self.save_path, index)
         return 
+    
+# define model Juggernaut XL
+class JuggernautXL(StableDiffusion):
+    def __init__(self, model_name):
+        super().__init__()
+        self.prompt_set = None
+        self.model_name = model_name
+        self.model_path = "RunDiffusion/Juggernaut-XL-v9"
+        self.torch_dtype = torch.float16
+        self.variant = "fp16"
+        # self.custom_pipeline="lpw_stable_diffusion"
+        # self.save_path = self.get_save_path()
+
+    def init_model(self):
+        self.model = DiffusionPipeline.from_pretrained(
+                                    self.model_path,
+                                    )
+        self.model.to("cuda")
+
+    def inference(self):
+        for patch_data in self.data_sets:
+            json_data = self.load_json(patch_data)
+            for data_info in json_data:
+                index  = data_info["index"]
+                prompt = data_info["prompt"]
+                prompt = self.prompt_process(prompt, "")
+                image = self.model(
+                            prompt=prompt,
+                            negative_prompt=PROMPT_REALISTIC_VISION_NEGATIVE,
+                            num_inference_steps=40,
+                            guidance_scale=7.0,
+                            ).images[0]
+                save_image(image, self.save_path, index)
+        return
 
 # model factory
 class ModelFactory:
@@ -433,5 +487,7 @@ class ModelFactory:
             return AbsoluteReality(model_name=model_name)
         elif model_name == "sd2_i2i":
             return Image2ImageSD2(model_name=model_name)
+        elif model_name == "juggernautxl":
+            return JuggernautXL(model_name=model_name)
         else:
             raise ValueError(f"Unknown model name: {model_name}")
