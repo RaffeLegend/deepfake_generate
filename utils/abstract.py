@@ -450,7 +450,7 @@ class JuggernautXL(StableDiffusion):
         super().__init__()
         self.prompt_set = None
         self.model_name = model_name
-        self.model_path = "RunDiffusion/Juggernaut-XL-v9"
+        self.model_path = "RunDiffusion/Juggernaut-XI-v11"
         self.torch_dtype = torch.float16
         self.variant = "fp16"
         # self.custom_pipeline="lpw_stable_diffusion"
