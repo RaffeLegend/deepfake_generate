@@ -25,6 +25,7 @@ class StableDiffusion:
         self.prompt_enhancer = "gpt2"
         self.style = "photographic"
         self.prompt_post = False
+        self.enhancer = None
 
     def set_prompt_enhancer(self):
         if self.prompt_enhancer == "gpt2":
@@ -312,6 +313,15 @@ class Playground(StableDiffusion):
                                         torch_dtype=self.torch_dtype,
                                         variant=self.variant,
                                         ).to("cuda")
+        
+        self.set_prompt_enhancer()
+        if self.enhancer is not None:
+            self.model.load_lora_weights(
+                                        "stabilityai/stable-diffusion-xl-base-1.0",
+                                        weight_name="sd_xl_offset_example-lora_1.0.safetensors",
+                                        adapter_name="offset",
+                                        )
+            self.model.set_adapters(["offset"], adapter_weights=[0.2])
 
     def inference(self):
         for patch_data in self.data_sets:
