@@ -65,7 +65,7 @@ class PromptEnhancer:
         self.init_model()
         self.init_processor_list()
         self.prompt_preprocess(prompt, style)
-        self.generation_config()
+        self.set_generation_config()
         self.model_generate()
         enhanced_prompt = self.prompt_enhanced()
 
