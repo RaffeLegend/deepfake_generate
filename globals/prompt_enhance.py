@@ -110,7 +110,7 @@ class PromptEnhancer:
         self.prompt = styles[style].format(prompt=prompt)
         self.inputs = self.tokenizer(prompt, return_tensors="pt").to("cuda")
         token_count = self.inputs["input_ids"].shape[1]
-        self.max_new_tokens = (50 - token_count) if (50 - token_count) > 0 else 0
+        self.max_new_tokens = (50 - token_count) if (50 - token_count) > 0 else 1
 
     def prompt_enhanced(self):
         output_tokens = [self.tokenizer.decode(generated_id, skip_special_tokens=True) for generated_id in self.generated_ids]
