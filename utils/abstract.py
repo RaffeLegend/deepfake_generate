@@ -478,6 +478,41 @@ class JuggernautXL(StableDiffusion):
                             ).images[0]
                 save_image(image, self.save_path, index)
         return
+    
+# define model flux
+class Flux(StableDiffusion):
+    def __init__(self, model_name):
+        super().__init__()
+        self.prompt_set = None
+        self.model_name = model_name
+        self.model_path = "black-forest-labs/FLUX.1-dev"
+        self.torch_dtype = torch.float16
+        self.variant = "fp16"
+        # self.custom_pipeline="lpw_stable_diffusion"
+        # self.save_path = self.get_save_path()
+
+    def init_model(self):
+        self.model = DiffusionPipeline.from_pretrained(
+                                    self.model_path,
+                                    )
+        self.model.to("cuda")
+        self.set_prompt_enhancer()
+
+    def inference(self):
+        for patch_data in self.data_sets:
+            json_data = self.load_json(patch_data)
+            for data_info in json_data:
+                index  = data_info["index"]
+                prompt = data_info["prompt"]
+                prompt = self.prompt_process(prompt, NEGATIVE_PROMPT)
+                image = self.model(
+                            prompt=prompt,
+                            negative_prompt=PROMPT_REALISTIC_VISION_NEGATIVE,
+                            num_inference_steps=50,
+                            guidance_scale=7.0,
+                            ).images[0]
+                save_image(image, self.save_path, index)
+        return
 
 # model factory
 class ModelFactory:
@@ -505,5 +540,7 @@ class ModelFactory:
             return Image2ImageSD2(model_name=model_name)
         elif model_name == "juggernautxl":
             return JuggernautXL(model_name=model_name)
+        elif model_name == "flux":
+            return Flux(model_name=model_name)
         else:
             raise ValueError(f"Unknown model name: {model_name}")
