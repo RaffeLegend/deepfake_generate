@@ -492,8 +492,10 @@ class Flux(StableDiffusion):
         # self.save_path = self.get_save_path()
 
     def init_model(self):
-        self.model = DiffusionPipeline.from_pretrained(
+        from diffusers import FluxPipeline
+        self.model = FluxPipeline.from_pretrained(
                                     self.model_path,
+                                    torch_type=self.torch_dtype,
                                     )
         self.model.to("cuda")
         self.set_prompt_enhancer()
