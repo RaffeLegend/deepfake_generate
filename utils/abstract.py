@@ -509,7 +509,6 @@ class Flux(StableDiffusion):
                 prompt = self.prompt_process(prompt, NEGATIVE_PROMPT)
                 image = self.model(
                             prompt=prompt,
-                            negative_prompt=PROMPT_REALISTIC_VISION_NEGATIVE,
                             num_inference_steps=50,
                             guidance_scale=7.0,
                             ).images[0]
