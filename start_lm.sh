@@ -1,10 +1,11 @@
 #!/bin/bash
 
-#SBATCH -p gpu -N 1 -n 16
+#SBATCH -p gpulowbig -N 1 -n 16
 #SBATCH -J sdxl_refiner_generate
 #SBATCH -o sdxl_log.out
 #SBATCH -e sdxl.err
-#SBATCH --gres=gpu:2
+#SBATCH --gres=gpu:1
+#SBATCH -t 24:00:00
 
 # source activate sdxl
 
@@ -15,4 +16,4 @@
 # mkdir -p $OUTPUT_DIR
 
 # execute shell
-python run_stable_lm.py --model SL2_12B --prompt prompt.json
+python run_image_description.py --model internVL2 --data_name flickr --image_path image_path/ --output_path output_path/
