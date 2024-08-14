@@ -69,8 +69,11 @@ class DiffusionModel:
                 info_list.append(info_path)
 
         info_list.sort()
-        index_start = info_list.index(prompt_index + '.json')
-        self.data_sets = info_list[:index_start]
+
+        for index, path in enumerate(info_list):
+            if prompt_index in path:
+                self.data_sets = info_list[:index]
+                break
 
         return info_list
     
