@@ -38,5 +38,8 @@ class ModelFactory:
         elif model_name == "flux":
             from models.image_model.flux import Flux
             return Flux(model_name=model_name)
+        elif model_name == "flux_quantized":
+            from models.image_model.flux import FluxQuantized
+            return FluxQuantized(model_name=model_name)
         else:
             raise ValueError(f"Unknown model name: {model_name}")
