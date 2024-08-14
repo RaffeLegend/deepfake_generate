@@ -27,9 +27,10 @@ class Kandinsky3(DiffusionModel):
     def inference(self):
         for patch_data in self.data_sets:
             json_data = self.load_json(patch_data)
+            output_path = self.get_output_path(patch_data)
             for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
                 image = self.model(prompt).images[0]
-                save_image(image, self.save_path, index)
+                save_image(image, output_path, index)
         return 

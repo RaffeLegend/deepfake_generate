@@ -1,4 +1,5 @@
 import torch
+import os
 from PIL import Image
 from utils.tools import save_image
 from diffusers import AutoPipelineForText2Image, StableDiffusion3Pipeline, \
@@ -26,11 +27,12 @@ class StableDiffusionXLTurbo(DiffusionModel):
     def inference(self):
         for patch_data in self.data_sets:
             json_data = self.load_json(patch_data)
+            output_path = self.get_output_path(patch_data)
             for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
                 image = self.model(prompt=prompt, num_inference_steps=3, guidance_scale=0.3).images[0]
-                save_image(image, self.save_path, index)
+                save_image(image, output_path, index)
             return 
 
 # define model sdxl
@@ -51,11 +53,12 @@ class StableDiffusionXL(DiffusionModel):
     def inference(self):
         for patch_data in self.data_sets:
             json_data = self.load_json(patch_data)
+            output_path = self.get_output_path(patch_data)
             for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
                 image = self.model(prompt=prompt, num_inference_steps=40, guidance_scale=0.3).images[0]
-                save_image(image, self.save_path, index)
+                save_image(image, output_path, index)
         return 
     
 # define model sd3-medium
@@ -83,6 +86,7 @@ class StableDiffusion3Medium(DiffusionModel):
     def inference(self):
         for patch_data in self.data_sets:
             json_data = self.load_json(patch_data)
+            output_path = self.get_output_path(patch_data)
             for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
@@ -96,7 +100,7 @@ class StableDiffusion3Medium(DiffusionModel):
                              num_inference_steps=30,
                              guidance_scale=9.0,
                              ).images[0]
-                save_image(image, self.save_path, index)
+                save_image(image, output_path, index)
         return 
 
 # define model sd cascade
@@ -122,6 +126,7 @@ class StableDiffusionCascade(DiffusionModel):
     def inference(self):
         for patch_data in self.data_sets:
             json_data = self.load_json(patch_data)
+            output_path = self.get_output_path(patch_data)
             for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
@@ -144,7 +149,7 @@ class StableDiffusionCascade(DiffusionModel):
                                  num_inference_steps=10
                                 ).images[0]
 
-                save_image(decoder_output, self.save_path, index)
+                save_image(decoder_output, output_path, index)
         return 
 
 # define model sd cascade
@@ -178,6 +183,7 @@ class StableDiffusionXLwithRefiner(DiffusionModel):
     def inference(self):
         for patch_data in self.data_sets:
             json_data = self.load_json(patch_data)
+            output_path = self.get_output_path(patch_data)
             for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
@@ -193,7 +199,7 @@ class StableDiffusionXLwithRefiner(DiffusionModel):
                             denoising_start=0.8,
                             image=image,
                             ).images[0]
-                save_image(image, self.save_path, index)
+                save_image(image, output_path, index)
         return 
     
 # define Stable Diffusion 2 for image to image task
@@ -218,6 +224,7 @@ class Image2ImageSD2(DiffusionModel):
     def inference(self):
         for patch_data in self.data_sets:
             json_data = self.load_json(patch_data)
+            output_path = self.get_output_path(patch_data)
             for data_info in json_data:
                 index  = data_info["index"]
                 prompt = data_info["prompt"]
@@ -229,5 +236,5 @@ class Image2ImageSD2(DiffusionModel):
                             strength=0.75,
                             guidance_scale=7.5,
                             ).images[0]
-                save_image(image, self.save_path, index)
+                save_image(image, output_path, index)
         return

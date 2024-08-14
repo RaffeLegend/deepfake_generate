@@ -13,6 +13,7 @@ def parse_args():
     parser.add_argument("--prompt",  type=str, default="./output/internVL2_output", help="prompt path")
     parser.add_argument("--output_path",  type=str, default="./output", help="output path")
     parser.add_argument("--image_path",  type=str, default="", help="input image path")
+    parser.add_argument("--prompt_index", type=str, default=None, help="the index of starting prompt file")
     return parser.parse_args()
 
 if __name__ == "__main__":
@@ -21,6 +22,7 @@ if __name__ == "__main__":
     model_list  = args.models
     prompt_path = args.prompt
     output_path = args.output_path
+    prompt_index = args.prompt_index
 
     is_folder(output_path)
 
@@ -32,7 +34,7 @@ if __name__ == "__main__":
 
             # running pipeline to generate
             model.get_save_path(output_path)
-            model.load_data(prompt_path)
+            model.load_data(prompt_path, prompt_index)
             model.init_model()
             model.inference()
         except ModelExecuteError as e:

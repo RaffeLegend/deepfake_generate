@@ -61,20 +61,28 @@ class DiffusionModel:
         return folder_path
     
     # Load data from Json
-    def load_data(self, prompt_path):
+    def load_data(self, prompt_path, prompt_index):
         info_list = list()
         for root, _, files in os.walk(prompt_path):
             for file in files:
                 info_path = os.path.join(root, file)
                 info_list.append(info_path)
 
-        self.data_sets = info_list
+        info_list.sort()
+        index_start = info_list.index(prompt_index + '.json')
+        self.data_sets = info_list[:index_start]
+
         return info_list
     
     def load_json(self, prompt_json):
         with open(prompt_json, 'r') as f:
             data = json.load(f)
         return data
+    
+    def get_output_path(self, prompt_json):
+        filename = os.path.splitext(os.path.basename(prompt_json))[0]
+        output_path = os.path.join(self.save_path, filename)
+        return output_path
     
     # loading image as input
     def load_image(self, path):
