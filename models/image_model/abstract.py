@@ -85,6 +85,7 @@ class DiffusionModel:
     def get_output_path(self, prompt_json):
         filename = os.path.splitext(os.path.basename(prompt_json))[0]
         output_path = os.path.join(self.save_path, filename)
+        is_folder(output_path)
         return output_path
     
     # loading image as input
