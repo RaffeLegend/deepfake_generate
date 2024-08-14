@@ -72,7 +72,7 @@ class DiffusionModel:
 
         for index, path in enumerate(info_list):
             if prompt_index in path:
-                self.data_sets = info_list[:index]
+                self.data_sets = info_list[index:]
                 break
 
         return info_list
