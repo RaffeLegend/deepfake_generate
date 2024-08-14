@@ -75,12 +75,16 @@ class FluxQuantized(DiffusionModel):
         freeze(text_encoder_2)
         self.model = FluxPipeline.from_pretrained(
                                     self.model_path,
+                                    transformer=None,
+                                    text_encoder_2=None,
                                     torch_type=self.torch_dtype,
                                     )
         self.model.transformer = transformer
         self.model.text_encoder_2 = text_encoder_2
         self.model.to("cuda")
-        self.set_prompt_enhancer()
+        self.model.enable_model_cpu_offload()
+
+        # self.set_prompt_enhancer()
 
     def inference(self):
         for patch_data in self.data_sets:
@@ -92,8 +96,8 @@ class FluxQuantized(DiffusionModel):
                 prompt = self.prompt_process(prompt, NEGATIVE_PROMPT)
                 image = self.model(
                             prompt=prompt,
-                            num_inference_steps=50,
-                            guidance_scale=7.0,
+                            num_inference_steps=20,
+                            guidance_scale=3.5,
                             ).images[0]
                 save_image(image, output_path, index)
         return
