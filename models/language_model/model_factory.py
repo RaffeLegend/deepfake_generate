@@ -11,5 +11,8 @@ class LMModelFactory:
         elif model_name == "mini_cpm":
             from models.language_model.mini_cpm import MiniCPM
             return MiniCPM(model_name=model_name)
+        elif model_name == "open_flamingo":
+            from models.language_model.open_flamingo import OpenFlamingo
+            return OpenFlamingo(model_name=model_name)
         else:
             raise ValueError(f"Unknown model name: {model_name}")

@@ -11,8 +11,8 @@ from huggingface_hub import hf_hub_download
 from prompts.prompt import PROMPT_GENERATE_DESCRIPTION
 from models.language_model.abstract import LanguageModel
 
-# define model MiniCPM
-class MiniCPM(LanguageModel):
+# define model OpenFlamingo
+class OpenFlamingo(LanguageModel):
     def __init__(self, model_name):
         super().__init__()
         self.prompt_set = None
