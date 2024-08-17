@@ -14,5 +14,8 @@ class LMModelFactory:
         elif model_name == "open_flamingo":
             from models.language_model.open_flamingo import OpenFlamingo
             return OpenFlamingo(model_name=model_name)
+        elif model_name == "qwen":
+            from models.language_model.qwen import Qwen2
+            return Qwen2(model_name=model_name)
         else:
             raise ValueError(f"Unknown model name: {model_name}")
