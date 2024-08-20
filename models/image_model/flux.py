@@ -44,6 +44,8 @@ class Flux(DiffusionModel):
                 save_image(image, output_path, index)
         return
     
+# support lora for flux to do
+
 # define model quantized flux
 class FluxQuantized(DiffusionModel):
     def __init__(self, model_name):
