@@ -1,5 +1,5 @@
 import torch
-from utils.utils import save_image
+from utils.tools import save_image
 from diffusers import DiffusionPipeline
 
 from sd_embed.embedding_funcs import get_weighted_text_embeddings_sd3
