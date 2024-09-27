@@ -83,10 +83,10 @@ class FluxQuantized(DiffusionModel):
                                     )
         self.model.transformer = transformer
         self.model.text_encoder_2 = text_encoder_2
-        self.model.to("cuda")
+        self.model.to(self.torch_dtype)
         self.model.enable_model_cpu_offload()
 
-        # self.set_prompt_enhancer()
+        self.set_prompt_enhancer()
 
     def inference(self):
         for patch_data in self.data_sets:
@@ -100,6 +100,7 @@ class FluxQuantized(DiffusionModel):
                             prompt=prompt,
                             num_inference_steps=20,
                             guidance_scale=3.5,
+                            generator=torch.Generator("cpu").manual_seed(0),
                             ).images[0]
                 save_image(image, output_path, index)
         return
