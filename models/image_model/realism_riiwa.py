@@ -27,7 +27,7 @@ class RealismRiiwa(DiffusionModel):
                                         variant=self.variant,
                                         ).to("cuda")
         
-        self.set_prompt_enhancer()
+        # self.set_prompt_enhancer()
 
     def inference(self):
         for patch_data in self.data_sets:
