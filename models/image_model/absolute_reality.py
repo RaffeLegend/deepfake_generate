@@ -11,7 +11,7 @@ class AbsoluteReality(DiffusionModel):
         super().__init__()
         self.prompt_set = None
         self.model_name = model_name
-        self.model_path = "Lykon/AbsoluteReality"
+        self.model_path = "digiplay/AbsoluteReality_v1.8.1"
         self.torch_dtype = torch.float16
         self.variant = "fp16"
         # self.custom_pipeline="lpw_stable_diffusion"
