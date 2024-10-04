@@ -26,6 +26,9 @@ class ModelFactory:
         elif model_name == "realistic_vision":
             from models.image_model.realistic_vision import RealisticVision6
             return RealisticVision6(model_name=model_name)
+        elif model_name == "realism_riiwa":
+            from models.image_model.realism_riiwa import RealismRiiwa
+            return RealismRiiwa(model_name=model_name)
         elif model_name == "absolute_reality":
             from models.image_model.absolute_reality import AbsoluteReality
             return AbsoluteReality(model_name=model_name)
