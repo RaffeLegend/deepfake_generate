@@ -26,7 +26,7 @@ class SDXLLightning(DiffusionModel):
 
     def init_model(self):
         self.unet = UNet2DConditionModel.from_config(self.base, subfolder="unet").to("cuda", torch.float16)
-        self.unet.load_state_dict(load_file(hf_hub_download(self.model, self.ckpt), device="cuda"))
+        self.unet.load_state_dict(load_file(hf_hub_download(self.model_path, self.ckpt), device="cuda"))
         self.model = StableDiffusionXLPipeline.from_pretrained(self.base, unet=self.unet, torch_dtype=torch.float16, variant="fp16").to("cuda")
 
         self.model.scheduler = EulerDiscreteScheduler.from_config(self.model.scheduler.config, timestep_spacing="trailing")
