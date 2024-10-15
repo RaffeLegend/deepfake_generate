@@ -14,6 +14,9 @@ class ModelFactory:
         elif model_name == "sd_cascade":
             from models.image_model.stable_diffusion import StableDiffusionCascade
             return StableDiffusionCascade(model_name=model_name)
+        elif model_name == "sdxl_lightning":
+            from models.image_model.sdxl_lightning import SDXLLightning
+            return SDXLLightning(model_name=model_name)
         elif model_name == "kandinsky3":
             from models.image_model.kandinsky import Kandinsky3
             return Kandinsky3(model_name=model_name)
