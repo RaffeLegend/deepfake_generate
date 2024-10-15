@@ -1,5 +1,8 @@
 import os
+import sys
 import argparse
+sys.path.append(os.path.join('..', os.path.abspath(__file__)))
+
 from models.language_model.model_factory import LMModelFactory
 from utils.exception import ModelExecuteError
 from utils.tools import is_folder
