@@ -50,8 +50,11 @@ class ModelFactory:
         elif model_name == "flux_turbo":
             from models.image_model.flux import FluxTurbo
             return FluxTurbo(model_name=model_name)
-        elif model_name == "flux_turbo":
+        elif model_name == "open_flux":
             from models.image_model.flux import OpenFlux
             return OpenFlux(model_name=model_name)
+        elif model_name == "flux_ghibsky":
+            from models.image_model.flux import FluxGhibsky
+            return FluxGhibsky(model_name=model_name)
         else:
             raise ValueError(f"Unknown model name: {model_name}")
