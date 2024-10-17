@@ -36,8 +36,8 @@ class IterComp(DiffusionModel):
                 prompt = self.prompt_process(prompt, NEGATIVE_PROMPT)
                 image = self.model(
                             prompt=prompt,
-                            num_inference_steps=50,
-                            guidance_scale=7.0,
+                            num_inference_steps=24,
+                            guidance_scale=3.5,
                             ).images[0]
                 save_image(image, output_path, index)
         return

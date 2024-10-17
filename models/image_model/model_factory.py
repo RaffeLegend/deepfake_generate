@@ -62,5 +62,8 @@ class ModelFactory:
         elif model_name == "itercomp":
             from models.image_model.itercomp import IterComp
             return IterComp(model_name=model_name)
+        elif model_name == "flux_antiblur":
+            from models.image_model.flux import FluxAntiBlur
+            return FluxAntiBlur(model_name=model_name)
         else:
             raise ValueError(f"Unknown model name: {model_name}")
