@@ -104,3 +104,43 @@ class FluxQuantized(DiffusionModel):
                             ).images[0]
                 save_image(image, output_path, index)
         return
+    
+
+# define model flux
+class FluxTurbo(DiffusionModel):
+    def __init__(self, model_name):
+        super().__init__()
+        self.prompt_set = None
+        self.model_name = model_name
+        self.model_path = "black-forest-labs/FLUX.1-dev"
+        self.adapter_id = "alimama-creative/FLUX.1-Turbo-Alpha"
+        self.torch_dtype = torch.float16
+        self.variant = "fp16"
+        # self.custom_pipeline="lpw_stable_diffusion"
+        # self.save_path = self.get_save_path()
+
+    def init_model(self):
+        self.model = FluxPipeline.from_pretrained(
+                                    self.model_path,
+                                    torch_type=self.torch_dtype,
+                                    )
+        self.model.to("cuda")
+        self.model.load_lora_weights(self.adapter_id)
+        self.model.fuse_lora()
+        self.set_prompt_enhancer()
+
+    def inference(self):
+        for patch_data in self.data_sets:
+            json_data = self.load_json(patch_data)
+            output_path = self.get_output_path(patch_data)
+            for data_info in json_data:
+                index  = data_info["index"]
+                prompt = data_info["prompt"]
+                prompt = self.prompt_process(prompt, NEGATIVE_PROMPT)
+                image = self.model(
+                            prompt=prompt,
+                            num_inference_steps=50,
+                            guidance_scale=7.0,
+                            ).images[0]
+                save_image(image, output_path, index)
+        return
