@@ -56,5 +56,8 @@ class ModelFactory:
         elif model_name == "flux_ghibsky":
             from models.image_model.flux import FluxGhibsky
             return FluxGhibsky(model_name=model_name)
+        elif model_name == "flux_realism":
+            from models.image_model.flux import FluxRealism
+            return FluxRealism(model_name=model_name)
         else:
             raise ValueError(f"Unknown model name: {model_name}")
