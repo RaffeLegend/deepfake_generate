@@ -22,7 +22,7 @@ class RealisticVision6(DiffusionModel):
                                     self.model_path,
                                     )
         self.model.to("cuda")
-        self.set_prompt_enhancer()
+        # self.set_prompt_enhancer()
 
     def inference(self):
         for patch_data in self.data_sets:
