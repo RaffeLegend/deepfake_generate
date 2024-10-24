@@ -3,8 +3,8 @@ from utils.tools import save_image
 from diffusers import Kandinsky3Pipeline
 
 from sd_embed.embedding_funcs import get_weighted_text_embeddings_sd3
-from globals.prompt import NEGATIVE_PROMPT, PROMPT_REALISTIC_VISION_NEGATIVE
-from globals.prompt_enhance import PromptEnhancer
+from prompts.prompt import NEGATIVE_PROMPT, PROMPT_REALISTIC_VISION_NEGATIVE
+from prompts.prompt_enhance import PromptEnhancer
 
 from models.image_model.abstract import DiffusionModel
 
