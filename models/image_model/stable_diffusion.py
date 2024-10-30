@@ -369,3 +369,68 @@ class StableDiffusion3_5LargeTurbo(DiffusionModel):
                              ).images[0]
                 save_image(image, output_path, index)
         return
+    
+#define model SD3.5 Medium
+class StableDiffusion3_5Medium(DiffusionModel):
+    def __init__(self, model_name):
+        super().__init__()
+        self.prompt_set = None
+        self.model_name = model_name
+        self.model_path = "stabilityai/stable-diffusion-3.5-medium"
+        self.torch_dtype = torch.bfloat16
+        self.variant = "fp16"
+        self.enhancer = None
+        self.prompt_post = True
+        self.quantized = True
+        # self.custom_pipeline="lpw_stable_diffusion"
+        # self.save_path = self.get_save_path()
+
+    def init_model(self):
+        if self.quantized:
+            nf4_config = BitsAndBytesConfig(
+                                    load_in_4bit=True,
+                                    bnb_4bit_quant_type="nf4",
+                                    bnb_4bit_compute_dtype=self.torch_dtype
+                                    )
+            model_nf4 = SD3Transformer2DModel.from_pretrained(
+                                    self.model_path,
+                                    subfolder="transformer",
+                                    quantization_config=nf4_config,
+                                    torch_dtype=self.torch_dtype
+                                    )
+
+            t5_nf4 = T5EncoderModel.from_pretrained("diffusers/t5-nf4", torch_dtype=self.torch_dtype)
+
+            self.model = StableDiffusion3Pipeline.from_pretrained(
+                                    self.model_path, 
+                                    transformer=model_nf4,
+                                    text_encoder_3=t5_nf4,
+                                    torch_dtype=self.torch_dtype
+                                    )
+            self.model.enable_model_cpu_offload()
+        else:
+            self.model = StableDiffusion3Pipeline.from_pretrained(
+                                    self.model_path, 
+                                    torch_dtype=self.torch_dtype,
+                                    )
+            self.model.to("cuda")
+
+    def inference(self):
+        for patch_data in self.data_sets:
+            json_data = self.load_json(patch_data)
+            output_path = self.get_output_path(patch_data)
+            for data_info in json_data:
+                index  = data_info["index"]
+                prompt = data_info["prompt"]
+                prompt_set = self.prompt_process(prompt, NEGATIVE_PROMPT)
+                prompt_embeds, prompt_neg_embeds, pooled_prompt_embeds, negative_pooled_prompt_embeds = prompt_set
+                image = self.model(
+                             prompt_embeds=prompt_embeds,
+                             pooled_prompt_embeds=pooled_prompt_embeds,
+                             negative_prompt_embeds=prompt_neg_embeds,
+                             negative_pooled_prompt_embeds=negative_pooled_prompt_embeds,
+                             num_inference_steps=4,
+                             guidance_scale=0,
+                             ).images[0]
+                save_image(image, output_path, index)
+        return

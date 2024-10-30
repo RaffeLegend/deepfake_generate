@@ -11,6 +11,9 @@ class ModelFactory:
         elif model_name == "sd3_medium":
             from models.image_model.stable_diffusion import StableDiffusion3Medium
             return StableDiffusion3Medium(model_name=model_name)
+        elif model_name == "sd3.5_medium":
+            from models.image_model.stable_diffusion import StableDiffusion3_5Medium
+            return StableDiffusion3_5Medium(model_name=model_name)
         elif model_name == "sd3.5_large":
             from models.image_model.stable_diffusion import StableDiffusion3_5Large
             return StableDiffusion3_5Large(model_name=model_name)
