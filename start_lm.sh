@@ -16,4 +16,4 @@
 # mkdir -p $OUTPUT_DIR
 
 # execute shell
-python run_image_description.py --model internVL2 --data_name flickr --image_path image_path/ --output_path output_path/
+python ./script/run_image_description.py --model internVL2 --data_name flickr --image_path image_path/ --output_path output_path/

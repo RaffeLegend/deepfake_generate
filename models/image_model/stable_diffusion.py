@@ -398,13 +398,9 @@ class StableDiffusion3_5Medium(DiffusionModel):
                                     quantization_config=nf4_config,
                                     torch_dtype=self.torch_dtype
                                     )
-
-            t5_nf4 = T5EncoderModel.from_pretrained("diffusers/t5-nf4", torch_dtype=self.torch_dtype)
-
             self.model = StableDiffusion3Pipeline.from_pretrained(
                                     self.model_path, 
                                     transformer=model_nf4,
-                                    text_encoder_3=t5_nf4,
                                     torch_dtype=self.torch_dtype
                                     )
             self.model.enable_model_cpu_offload()
