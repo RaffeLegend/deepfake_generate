@@ -1,9 +1,9 @@
 #!/bin/bash
 
-#SBATCH -p gpulowbig -N 1 -n 16
-#SBATCH -J enhancer
-#SBATCH -o sdxl_log_image.out
-#SBATCH -e sdxl_image.err
+#SBATCH -p gpulowmed -N 1 -n 16
+#SBATCH -J flux
+#SBATCH -o sdxl_log.out
+#SBATCH -e sdxl_error.err
 #SBATCH --gres=gpu:1
 #SBATCH -t 24:00:00
 
@@ -16,6 +16,5 @@
 # mkdir -p $OUTPUT_DIR
 
 # execute shell
-# --model sdxl_turbo sdxl sd3_medium sd_cascade kandinsky3 sdxl_refiner playground
-python run_image_generation.py --model flux  --prompt prompt_folder/  --output_path output_folder/
-
+#python run_sd.py --model sdxl_turbo sdxl sd3_medium sd_cascade kandinsky3 sdxl_refiner playground --prompt prompt.txt
+python run_image_generation.py --model flux_turbo  --prompt /mnt/data2/users/chengyh1/generated_results/prompt_results/coco_result  --prompt_index coco_0000  --output_path /mnt/data2/users/hilight/generated_results/dataset_collect/
