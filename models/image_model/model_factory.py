@@ -75,7 +75,7 @@ class ModelFactory:
             from models.image_model.flux import FluxAntiBlur
             return FluxAntiBlur(model_name=model_name)
         elif model_name == "in_context":
-            from models.image_mode.in_context import InContext
+            from models.image_model.in_context import InContext
             return InContext(model_name=model_name)
         else:
             raise ValueError(f"Unknown model name: {model_name}")
