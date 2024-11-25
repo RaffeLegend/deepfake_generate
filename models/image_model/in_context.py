@@ -16,7 +16,7 @@ class InContext(DiffusionModel):
         self.model_name = model_name
         self.model_path = "black-forest-labs/FLUX.1-dev"
         self.adapter_id = "ali-vilab/In-Context-LoRA"
-        self.torch_dtype = torch.float16
+        self.torch_dtype = torch.bfloat16
         self.variant = "fp16"
         # self.custom_pipeline="lpw_stable_diffusion"
         # self.save_path = self.get_save_path()
@@ -28,7 +28,7 @@ class InContext(DiffusionModel):
                                     )
         self.model.load_lora_weights(self.adapter_id)
         self.model.to("cuda")
-        self.set_prompt_enhancer()
+        # self.set_prompt_enhancer()
 
     def inference(self):
         for patch_data in self.data_sets:

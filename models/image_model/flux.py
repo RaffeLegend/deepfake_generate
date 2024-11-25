@@ -114,7 +114,7 @@ class FluxTurbo(DiffusionModel):
         self.model_name = model_name
         self.model_path = "black-forest-labs/FLUX.1-dev"
         self.adapter_id = "alimama-creative/FLUX.1-Turbo-Alpha"
-        self.torch_dtype = torch.float16
+        self.torch_dtype = torch.bfloat16
         self.variant = "fp16"
         # self.custom_pipeline="lpw_stable_diffusion"
         # self.save_path = self.get_save_path()
@@ -127,7 +127,7 @@ class FluxTurbo(DiffusionModel):
         self.model.to("cuda")
         self.model.load_lora_weights(self.adapter_id)
         self.model.fuse_lora()
-        self.set_prompt_enhancer()
+        # self.set_prompt_enhancer()
 
     def inference(self):
         for patch_data in self.data_sets:
@@ -153,7 +153,7 @@ class OpenFlux(DiffusionModel):
         self.prompt_set = None
         self.model_name = model_name
         self.model_path = "ostris/OpenFLUX.1"
-        self.torch_dtype = torch.float16
+        self.torch_dtype = torch.bfloat16
         self.variant = "fp16"
         # self.custom_pipeline="lpw_stable_diffusion"
         # self.save_path = self.get_save_path()
@@ -164,7 +164,7 @@ class OpenFlux(DiffusionModel):
                                     torch_type=self.torch_dtype,
                                     )
         self.model.to("cuda")
-        self.set_prompt_enhancer()
+        # self.set_prompt_enhancer()
 
     def inference(self):
         for patch_data in self.data_sets:
@@ -190,7 +190,8 @@ class FluxGhibsky(DiffusionModel):
         self.model_name = model_name
         self.model_path = "black-forest-labs/FLUX.1-dev"
         self.adapter_id = "aleksa-codes/flux-ghibsky-illustration"
-        self.torch_dtype = torch.float16
+        self.weight_name = "lora.safetensors"
+        self.torch_dtype = torch.bfloat16
         self.variant = "fp16"
         # self.custom_pipeline="lpw_stable_diffusion"
         # self.save_path = self.get_save_path()
@@ -201,9 +202,9 @@ class FluxGhibsky(DiffusionModel):
                                     torch_type=self.torch_dtype,
                                     )
         self.model.to("cuda")
-        self.model.load_lora_weights(self.adapter_id)
+        self.model.load_lora_weights(self.adapter_id, weight_name=self.weight_name)
         self.model.fuse_lora()
-        self.set_prompt_enhancer()
+        # self.set_prompt_enhancer()
 
     def inference(self):
         for patch_data in self.data_sets:
@@ -229,7 +230,7 @@ class FluxRealism(DiffusionModel):
         self.model_name = model_name
         self.model_path = "black-forest-labs/FLUX.1-dev"
         self.adapter_id = "XLabs-AI/flux-RealismLora"
-        self.torch_dtype = torch.float16
+        self.torch_dtype = torch.bfloat16
         self.variant = "fp16"
         # self.custom_pipeline="lpw_stable_diffusion"
         # self.save_path = self.get_save_path()
@@ -242,7 +243,7 @@ class FluxRealism(DiffusionModel):
         self.model.to("cuda")
         self.model.load_lora_weights(self.adapter_id)
         self.model.fuse_lora()
-        self.set_prompt_enhancer()
+        # self.set_prompt_enhancer()
 
     def inference(self):
         for patch_data in self.data_sets:
@@ -269,7 +270,8 @@ class FluxAntiBlur(DiffusionModel):
         self.model_name = model_name
         self.model_path = "black-forest-labs/FLUX.1-dev"
         self.adapter_id = "Shakker-Labs/FLUX.1-dev-LoRA-AntiBlur"
-        self.torch_dtype = torch.float16
+        self.weight_name = "FLUX-dev-lora-AntiBlur.safetensors"
+        self.torch_dtype = torch.bfloat16
         self.variant = "fp16"
         # self.custom_pipeline="lpw_stable_diffusion"
         # self.save_path = self.get_save_path()
@@ -280,9 +282,9 @@ class FluxAntiBlur(DiffusionModel):
                                     torch_type=self.torch_dtype,
                                     )
         self.model.to("cuda")
-        self.model.load_lora_weights(self.adapter_id)
-        self.model.fuse_lora()
-        self.set_prompt_enhancer()
+        self.model.load_lora_weights(self.adapter_id, weight_name=self.weight_name)
+        self.model.fuse_lora(lora_scale=1.5)
+        # self.set_prompt_enhancer()
 
     def inference(self):
         for patch_data in self.data_sets:
