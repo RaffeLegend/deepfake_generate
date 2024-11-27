@@ -139,7 +139,7 @@ class FluxTurbo(DiffusionModel):
                 prompt = self.prompt_process(prompt, NEGATIVE_PROMPT)
                 image = self.model(
                             prompt=prompt,
-                            num_inference_steps=8,
+                            num_inference_steps=20,
                             guidance_scale=3.5,
                             ).images[0]
                 save_image(image, output_path, index)
@@ -216,7 +216,7 @@ class FluxGhibsky(DiffusionModel):
                 prompt = self.prompt_process(prompt, NEGATIVE_PROMPT)
                 image = self.model(
                             prompt=prompt,
-                            num_inference_steps=8,
+                            num_inference_steps=25,
                             guidance_scale=3.5,
                             ).images[0]
                 save_image(image, output_path, index)
@@ -255,7 +255,7 @@ class FluxRealism(DiffusionModel):
                 prompt = self.prompt_process(prompt, NEGATIVE_PROMPT)
                 image = self.model(
                             prompt=prompt,
-                            num_inference_steps=8,
+                            num_inference_steps=25,
                             guidance_scale=3.5,
                             ).images[0]
                 save_image(image, output_path, index)
