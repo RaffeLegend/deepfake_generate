@@ -8,6 +8,9 @@ class LMModelFactory:
         elif model_name == "internVL2":
             from models.language_model.internvl import InternVL2
             return InternVL2(model_name=model_name)
+        elif model_name == "internVL2_5":
+            from models.language_model.internvl import InternVL2_5
+            return InternVL2_5(model_name=model_name)
         elif model_name == "mini_cpm":
             from models.language_model.mini_cpm import MiniCPM
             return MiniCPM(model_name=model_name)
