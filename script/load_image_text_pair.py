@@ -2,7 +2,8 @@ import json
 
 def read_and_save_json(input_file, output_file):
     """
-    Reads a JSON file and writes its content to another file.
+    Reads a JSON file, extracts 'text' and 'image_path' fields, 
+    and writes the filtered content to another file.
 
     :param input_file: Path to the input JSON file.
     :param output_file: Path to the output JSON file.
@@ -12,11 +13,17 @@ def read_and_save_json(input_file, output_file):
         with open(input_file, 'r', encoding='utf-8') as infile:
             data = json.load(infile)
         
-        # Write JSON data to the output file
-        with open(output_file, 'w', encoding='utf-8') as outfile:
-            json.dump(data, outfile, indent=4, ensure_ascii=False)
+        # Extract only 'text' and 'image_path' fields
+        filtered_data = [
+            {"text": item.get("text"), "image_path": item.get("image_path")}
+            for item in data if "text" in item and "image_path" in item
+        ]
         
-        print(f"JSON data successfully saved to {output_file}")
+        # Write filtered JSON data to the output file
+        with open(output_file, 'w', encoding='utf-8') as outfile:
+            json.dump(filtered_data, outfile, indent=4, ensure_ascii=False)
+        
+        print(f"Filtered JSON data successfully saved to {output_file}")
     except Exception as e:
         print(f"An error occurred: {e}")
 
