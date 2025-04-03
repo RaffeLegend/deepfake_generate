@@ -70,3 +70,31 @@ class QwenModel(BaseModel):
 
         # Return the processed response
         return response
+    
+    def process_image_and_text(self, image_path, text_input):
+        """
+        Process a pair of image and text using the model. This function assumes the model supports multimodal inputs.
+        """
+        # Load and preprocess the image
+        image = Image.open(image_path).convert("RGB")
+        preprocess = self.tokenizer.image_processor
+        image_tensor = preprocess(image, return_tensors="pt").to("cuda")
+
+        # Tokenize the text input
+        text_inputs = self.tokenizer(
+            text_input, return_tensors="pt", padding=True, truncation=True
+        ).to("cuda")
+
+        # Generate response using the model
+        outputs = self.model.generate(
+            pixel_values=image_tensor["pixel_values"],
+            input_ids=text_inputs["input_ids"],
+            attention_mask=text_inputs["attention_mask"],
+            max_new_tokens=512
+        )
+
+        # Decode the generated tokens into text
+        response = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)[0]
+
+        # Return the processed response
+        return response
