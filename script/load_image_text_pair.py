@@ -53,7 +53,8 @@ def process_with_qwen_model(json_file):
             if not text or not image_path:
                 continue
             # Process the text and image using the Qwen model
-            response = qwen_model.process_image_and_text(image_path, text)
+            qwen_model.init_message(image_path, text)
+            response = qwen_model.preprocess_input()
             # Add the response to the current item
             item["response"] = response
 
