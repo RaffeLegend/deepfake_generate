@@ -1,15 +1,16 @@
 import os
 import json
 
-import torchvision.transforms as T
+# import torchvision.transforms as T
 
 import base64
 from io import BytesIO
 
+'''
 from utils.tools import is_folder
 from prompts.prompt import PROMPT_GENERATE_DESCRIPTION
 from globals.define import IMAGENET_MEAN, IMAGENET_STD
-
+'''
 from abc import ABC, abstractmethod
 
 class MultimodalModel(ABC):
@@ -36,6 +37,7 @@ class MultimodalModel(ABC):
         self.task_type = None  # Define the type of task (e.g., 'generation', 'detection', etc.)
         self.output_type = None  # Define the type of output (e.g., 'image', 'video', etc.)
 
+    '''
     # Set the output path for saving results
     def get_save_path(self, output_path: str, data_name: str) -> None:
         self.data_name = data_name
@@ -122,7 +124,7 @@ class MultimodalModel(ABC):
             for root, _, files in os.walk(self.save_path)
             for file in files if file.endswith(".json")
         ]
-
+    '''
     def load_image_text_pairs(self, image_path: str, text_path: str):
         """
         Load image and text pairs from a JSON file and save them to a new JSON file.
@@ -140,7 +142,7 @@ class MultimodalModel(ABC):
         output_file = os.path.join(self.save_path, "image_text_pairs.json")
         with open(output_file, "w", encoding="utf-8") as outfile:
             json.dump(image_text_pairs, outfile, indent=4, ensure_ascii=False)
-
+    '''
     @abstractmethod
     def process_text(self, text):
         """
@@ -185,3 +187,4 @@ class MultimodalModel(ABC):
         :return: Model output
         """
         pass
+    '''

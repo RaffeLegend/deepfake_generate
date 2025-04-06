@@ -1,9 +1,8 @@
-from .abstract import BaseModel
+from models.multimodal_model.abstract import MultimodalModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from PIL import Image
-import torch
 
-class QwenModel(BaseModel):
+class QwenModel(MultimodalModel):
     def __init__(self, config):
         super().__init__(config)
         self.model_name = "Qwen/Qwen2.5-7B-Instruct"

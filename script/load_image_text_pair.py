@@ -1,5 +1,8 @@
 import json
-from ..models.multimodal_model.qwen import QwenModel
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from models.multimodal_model.qwen import QwenModel
 
 def read_and_save_json(input_file, output_file):
     """
@@ -36,7 +39,8 @@ def process_with_qwen_model(json_file):
     :param model_name: Name of the Qwen model to use.
     """
     # Initialize the Qwen model
-    qwen_model = QwenModel()
+    qwen_model = QwenModel(config="")
+    qwen_model.init_model()
     try:
         # Read the JSON data once
         with open(json_file, 'r', encoding='utf-8') as infile:
@@ -44,7 +48,7 @@ def process_with_qwen_model(json_file):
         # Process each entry with the Qwen model
         for item in data:
             text = item.get("text", "")
-            image_path = item.get("image_path", "")
+            image_path = "/mnt/data1/users/yiwei/data/mmfakebench/MMFakeBench_test"+item.get("image_path", "")
             # Skip processing if either text or image_path is missing
             if not text or not image_path:
                 continue
@@ -63,6 +67,7 @@ def process_with_qwen_model(json_file):
 
 # Example usage
 if __name__ == "__main__":
-    input_path = "input.json"  # Replace with your input JSON file path
+    input_path = "/mnt/data1/users/yiwei/data/mmfakebench/MMFakeBench_test.json"  # Replace with your input JSON file path
     output_path = "output.json"  # Replace with your desired output JSON file path
     read_and_save_json(input_path, output_path)
+    process_with_qwen_model(output_path)
