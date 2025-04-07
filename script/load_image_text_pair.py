@@ -1,6 +1,7 @@
 import json
 import sys
 import os
+import traceback
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from models.multimodal_model.qwen import QwenModel
 
@@ -65,6 +66,7 @@ def process_with_qwen_model(json_file):
         print(f"Processed JSON data successfully updated in {json_file}")
     except Exception as e:
         print(f"An error occurred while processing with Qwen model: {e}")
+        traceback.print_exc()
 
 # Example usage
 if __name__ == "__main__":
