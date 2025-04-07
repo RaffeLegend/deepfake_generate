@@ -35,11 +35,13 @@ class QwenModel(MultimodalModel):
         # Combine system and user messages into a single input
         conversation = [
             {"role": "system", "content": system_message},
-            {"role": "user", "content": 
-                f"Image: {image_path}\n\n"
+            {"role": "user", 
+             "content": 
+                f"Image: <image>\n\n"
                 f"Text: {user_message}\n\n"
-                f"Prompt: {prompt}"
-            }
+                f"Prompt: {prompt}",
+            "image": image_path
+            },
         ]
         # Tokenize the combined message
         USE_AUDIO_IN_VIDEO = False
