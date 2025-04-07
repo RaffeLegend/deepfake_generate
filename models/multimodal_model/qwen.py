@@ -28,26 +28,18 @@ class QwenModel(MultimodalModel):
         # self.image_processor = self.processor.image_processor
 
     def init_message(self, image_path, text_input):
-        prompt = "Provide a brief introduction to large language models."
-        system_message = "You are Qwen, an AI assistant created by Alibaba Cloud. Your purpose is to assist users effectively."
+        prompt = "Please write a news article based on the image and the text above."
+        system_message = "You are a journalist who specializes in generating fake news. Based on the image and the text provided, write a realistic and persuasive fake news article that looks like a real report. Your writing should be coherent, informative, and misleading enough to seem credible."
         user_message = text_input
 
         # Combine system and user messages into a single input
         conversation = [
-            {
-                "role": "system",
-                "content": system_message,
-            },
-            {
-                "role": "user",
-                "content": [
-                    {"type": "image", 
-                     "video": "",
-                     "text": text_input,
-                     "image": image_path,
-                     "audio": "",},
-                ],
-            },
+            {"role": "system", "content": system_message},
+            {"role": "user", "content": 
+                f"Image: {image_path}\n\n"
+                f"Text: {user_message}\n\n"
+                f"Prompt: {prompt}"
+            }
         ]
         # Tokenize the combined message
         USE_AUDIO_IN_VIDEO = True
