@@ -9,7 +9,7 @@ class QwenModel(MultimodalModel):
     def __init__(self, config):
         super().__init__(config)
         self.model_name = "Qwen/Qwen2.5-Omni-7B"
-        self.dtype = "float16"
+        self.dtype = "float32"
         self.model = None
         self.processor = None
 
@@ -48,11 +48,11 @@ class QwenModel(MultimodalModel):
         text = self.processor.apply_chat_template(conversation, add_generation_prompt=True, tokenize=False)
         audios, images, videos = process_mm_info(conversation, use_audio_in_video=USE_AUDIO_IN_VIDEO)
         inputs = self.processor(text=text, audios=audios, images=images, videos=videos, return_tensors="pt", padding=True, use_audio_in_video=USE_AUDIO_IN_VIDEO)
-        self.inputs = inputs.cuda().to(self.dtype)
+        self.inputs = inputs.to('cuda').to(self.dtype)
 
     def preprocess_input(self):
         # Inference: Generation of the output text and audio
-        text_ids, audio = self.model.generate(**self.inputs, use_audio_in_video=True)
+        text_ids, audio = self.model.generate(**self.inputs, use_audio_in_video=False)
 
         text = self.processor.batch_decode(text_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)
         return text

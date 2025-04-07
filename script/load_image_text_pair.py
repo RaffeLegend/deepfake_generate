@@ -66,7 +66,7 @@ def process_with_qwen_model(json_file):
         print(f"Processed JSON data successfully updated in {json_file}")
     except Exception as e:
         print(f"An error occurred while processing with Qwen model: {e}")
-        traceback.print_exc()
+        traceback.print_exc(file=sys.stdout)
 
 # Example usage
 if __name__ == "__main__":
