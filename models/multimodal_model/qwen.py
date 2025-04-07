@@ -42,7 +42,7 @@ class QwenModel(MultimodalModel):
             }
         ]
         # Tokenize the combined message
-        USE_AUDIO_IN_VIDEO = True
+        USE_AUDIO_IN_VIDEO = False
         text = self.processor.apply_chat_template(conversation, add_generation_prompt=True, tokenize=False)
         audios, images, videos = process_mm_info(conversation, use_audio_in_video=USE_AUDIO_IN_VIDEO)
         inputs = self.processor(text=text, audios=audios, images=images, videos=videos, return_tensors="pt", padding=True, use_audio_in_video=USE_AUDIO_IN_VIDEO)
