@@ -77,5 +77,8 @@ class ModelFactory:
         elif model_name == "in_context":
             from models.image_model.in_context import InContext
             return InContext(model_name=model_name)
+        elif model_name == "hi_dream":
+            from models.image_model.hi_dream import HiDream
+            return HiDream(model_name=model_name)
         else:
             raise ValueError(f"Unknown model name: {model_name}")
